@@ -4,9 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.NamedQuery;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -42,10 +47,15 @@ public class MovieController {
 	
 	@Autowired 
 	private CredentialsService credentialsService;
+	
+	
+
 
 	@GetMapping(value = "/") 
 	public String index(Model model) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Pageable pageable = PageRequest.of(0, 10);
+		model.addAttribute("movies", this.movieRepository.findTop10MoviesOrderByRatingDesc(pageable));
 		if (authentication instanceof AnonymousAuthenticationToken) {
 	        return "index.html";
 		}

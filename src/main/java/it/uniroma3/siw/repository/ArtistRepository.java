@@ -11,7 +11,7 @@ public interface ArtistRepository extends CrudRepository<Artist, Long> {
 
 	public boolean existsByNameAndSurname(String name, String surname);	
 
-	@Query(value="select * "
+	@Query(value="select  * "
 			+ "from artist a "
 			+ "where a.id not in "
 			+ "(select actors_id "
