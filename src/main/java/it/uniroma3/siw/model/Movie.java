@@ -10,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -30,6 +31,8 @@ public class Movie {
     @Min(1900)
     @Max(2023)
 	private Integer year;
+
+	private Integer rating;
     
 	private String urlImage;
 	
@@ -47,6 +50,36 @@ public class Movie {
 	private Set<Image> images;
 
 	
+	
+	public Movie() {
+		this.rating = 0;
+	}
+
+	public Integer getRating() {
+		return rating;
+	}
+
+	public Set<Review> getReviews() {
+		return reviews;
+	}
+
+	public Set<Image> getImages() {
+		return images;
+	}
+
+	
+
+	public void setRating(Integer rating) {
+		this.rating = rating;
+	}
+
+	public void setReviews(Set<Review> reviews) {
+		this.reviews = reviews;
+	}
+
+	public void setImages(Set<Image> images) {
+		this.images = images;
+	}
 
 	public Long getId() {
 		return id;

@@ -22,7 +22,7 @@
  <nav class="navbar navbar-expand-lg bg-body-tertiary" >
 	
 	<div class="container-fluid" style="max-width: 1500px;">
-	  <a class="navbar-brand" href="#">SiwMovie</a>
+	  <a class="navbar-brand" href="/">SiwMovie</a>
 	  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
 		<span class="navbar-toggler-icon"></span>
 	  </button>
@@ -67,13 +67,38 @@
   </nav>
 
   <div class="container my-5">
-	<h1 class="text-center">Archivio film</h1>
+	<h1 class="text-center">I migliori 10 Film!</h1>
 	<div>
 		<a href="/movie">Elenco Film</a>
 	</div>
 	<div>
 		<a href="/artist">Elenco Artisti</a>
 	</div>
+	
+	<div th:if="${!movies.isEmpty()}" class="container my-3">
+		<div class="row">
+		  <div th:each="movie, movieStat : ${movies}" class="col-md-4">
+			<div class="card mb-3">
+			  <img th:src="..." class="card-img-top" alt="Movie Poster">
+			  <div class="card-body">
+				<h5 th:text="${movie.title}" class="card-title"></h5>
+				<p th:text="${movie.description}" class="card-text"></p>
+				<a th:href="@{|/movies/${movie.id}|}" class="btn btn-primary">Details</a>
+			  </div>
+			</div>
+			<!-- End row if 3 columns or end of list -->
+			<div th:if="${movieStat.index() % 3 == 2 or movieStat.last}" class="w-100"></div>
+		  </div>
+		</div>
+	  </div>
+	<div th:if="${movies.isEmpty()}">Non ci sono film che soddisfano i requisiti</div>
+	<ul th:if="${!movies.isEmpty()}">
+		<li th:each="movie : ${movies}">
+			<a href="movie.html" th:href="@{'/movie' + '/' + ${movie.id}}"
+				th:text="${movie.title} + ' (' + ${movie.year}+')'">Up! (2000)</a>
+		</li>
+	</ul>
+  </div>
   </div>
 </body>
 
