@@ -67,7 +67,9 @@
   </nav>
 
   <div class="container my-5">
+	<div class="span4"><img src="/images/logo-siw.png" /></div>
 	<h1 class="text-center">I migliori 10 Film!</h1>
+	
 	<div>
 		<a href="/movie">Elenco Film</a>
 	</div>
@@ -82,23 +84,13 @@
 			  <img th:src="..." class="card-img-top" alt="Movie Poster">
 			  <div class="card-body">
 				<h5 th:text="${movie.title}" class="card-title"></h5>
-				<p th:text="${movie.description}" class="card-text"></p>
-				<a th:href="@{|/movies/${movie.id}|}" class="btn btn-primary">Details</a>
+				<p th:text="${movie.year}" class="card-text"></p>
+				<a th:href="@{|/movie/${movie.id}|}" class="btn btn-primary">Details</a>
 			  </div>
 			</div>
-			<!-- End row if 3 columns or end of list -->
-			<div th:if="${movieStat.index() % 3 == 2 or movieStat.last}" class="w-100"></div>
 		  </div>
 		</div>
 	  </div>
-	<div th:if="${movies.isEmpty()}">Non ci sono film che soddisfano i requisiti</div>
-	<ul th:if="${!movies.isEmpty()}">
-		<li th:each="movie : ${movies}">
-			<a href="movie.html" th:href="@{'/movie' + '/' + ${movie.id}}"
-				th:text="${movie.title} + ' (' + ${movie.year}+')'">Up! (2000)</a>
-		</li>
-	</ul>
-  </div>
   </div>
 </body>
 
