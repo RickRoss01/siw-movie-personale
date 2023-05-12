@@ -5,13 +5,16 @@ import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -32,7 +35,7 @@ public class Movie {
     @Max(2023)
 	private Integer year;
 
-	private Integer rating;
+	private Float rating;
     
 	private String urlImage;
 	
@@ -43,6 +46,10 @@ public class Movie {
 	@ManyToMany
 	private Set<Artist> actors;
 	
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="primary_image_id")
+	private Image primaryImage;
+
 	@OneToMany(mappedBy = "movie")
 	private Set<Review> reviews;
 	
@@ -52,10 +59,10 @@ public class Movie {
 	
 	
 	public Movie() {
-		this.rating = 0;
+		this.rating = 0.0f;
 	}
 
-	public Integer getRating() {
+	public Float getRating() {
 		return rating;
 	}
 
@@ -69,7 +76,7 @@ public class Movie {
 
 	
 
-	public void setRating(Integer rating) {
+	public void setRating(Float rating) {
 		this.rating = rating;
 	}
 
@@ -128,6 +135,14 @@ public class Movie {
 		this.actors = actors;
 	}
 
+	public Image getPrimaryImage() {
+		return primaryImage;
+	}
+
+	public void setPrimaryImage(Image primaryImage) {
+		this.primaryImage = primaryImage;
+	}
+	
 	@Override
 	public int hashCode() {
 		return Objects.hash(title, year);
@@ -144,4 +159,6 @@ public class Movie {
 		Movie other = (Movie) obj;
 		return Objects.equals(title, other.title) && year.equals(other.year);
 	}
+
+	
 }

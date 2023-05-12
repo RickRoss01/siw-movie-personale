@@ -5,7 +5,7 @@
 	<title>
 		SiwMovie - Homepage
 	</title>
-	<link rel="stylesheet" href="/css/stile.css" />
+	<link rel="stylesheet" href="/css/stile2.css" />
 </head>
 
 <!DOCTYPE html>
@@ -29,37 +29,36 @@
 	  <div class="collapse navbar-collapse" id="navbarScroll">
 		<ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
 		  <li class="nav-item">
-			<a class="nav-link active" aria-current="page" href="#">Home</a>
+			<a class="nav-link active" aria-current="page" href="/">Home</a>
 		  </li>
-		  <li class="nav-item">
-			<a class="nav-link" href="#">Link</a>
-		  </li>
+		  
 		  <li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-			  Link
+			  FIlm
 			</a>
 			<ul class="dropdown-menu">
-			  <li><a class="dropdown-item" href="#">Action</a></li>
-			  <li><a class="dropdown-item" href="#">Another action</a></li>
+			  <li><a class="dropdown-item" href="/movies">Tutti i Film</a></li>
 			  <li><hr class="dropdown-divider"></li>
-			  <li><a class="dropdown-item" href="#">Something else here</a></li>
+			  <li><a class="dropdown-item" href="#">Azione</a></li>
+			  <li><a class="dropdown-item" href="#">Horror</a></li>
 			</ul>
 		  </li>
 		  <li class="nav-item">
-			<a class="nav-link disabled">Link</a>
+			<a class="nav-link" href="/artist" >Artisti</a>
 		  </li>
 		</ul>
 		
-		<form class="d-flex flex-grow-1" role="search" style="margin-right: 100px; ">
-		  <input class="form-control me-2" type="search" placeholder="Cerca un film!" aria-label="Search">
+		<form class="d-flex flex-grow-1" th:action="@{/searchMovies}" method="post"  style="margin-right: 100px; ">
+		  <input class="form-control me-2"  th:value="${year}"  name="year" type="search" placeholder="Cerca un film!" aria-label="Search">
 		  <button class="btn btn-outline-success" type="submit">Cerca</button>
 		</form>
 		<div th:if="${#request.userPrincipal}" style="margin-left: 10%;">
-			<span th:text="${#request.userPrincipal.principal.username}"></span>
-			<a href="/logout">Logout</a>
+			<span>Ciao, </span>
+			<span th:text="${#request.userPrincipal.principal.username}"> </span>
+			<button class="btn btn-outline-success" type="submit"><a id="loginbutton" href="/logout">Logout</a></button>
 		</div>
 		<div th:unless="${#request.userPrincipal}">
-			<button class="btn btn-outline-success" type="submit"><a href="/login">Login</a></button>
+			<button class="btn btn-outline-success" type="submit"><a id="loginbutton" href="/login">Login</a></button>
 		</div>
 	  </div>
 	
@@ -67,31 +66,25 @@
   </nav>
 
   <div class="container my-5">
-	<div class="span4"><img src="/images/logo-siw.png" /></div>
-	<h1 class="text-center">I migliori 10 Film!</h1>
-	
-	<div>
-		<a href="/movie">Elenco Film</a>
-	</div>
-	<div>
-		<a href="/artist">Elenco Artisti</a>
-	</div>
+	<div class="container"><img class="img-fluid" src="/images/logo-siw.png" style=""/></div>
+	<h1 class="text-center">I migliori 3!</h1>
 	
 	<div th:if="${!movies.isEmpty()}" class="container my-3">
-		<div class="row">
-		  <div th:each="movie, movieStat : ${movies}" class="col-md-4">
-			<div class="card mb-3">
-			  <img th:src="..." class="card-img-top" alt="Movie Poster">
+		<div class="row" >
+		  <div th:each="movie, movieStat : ${movies}" class="col-md-4 col-sm-6 " id="riga"  >
+			<div class="card mb-3"style="width: 18rem; ">
+			  <img th:src="${movie.primaryImage.imagePath}" class="card-img-top " id = "moviecard" alt="Movie Poster">
 			  <div class="card-body">
 				<h5 th:text="${movie.title}" class="card-title"></h5>
 				<p th:text="${movie.year}" class="card-text"></p>
-				<a th:href="@{|/movie/${movie.id}|}" class="btn btn-primary">Details</a>
+				<p th:text=" ${'Valutazione: '+movie.rating}" class="card-text">Valutazione: </p>
+				<a th:href="@{|/movie/${movie.id}|}" class="btn btn-primary">Dettagli</a>
 			  </div>
 			</div>
 		  </div>
 		</div>
-	  </div>
-  </div>
+	  </div>	  
+	  
 </body>
 
 </html>

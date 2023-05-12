@@ -54,8 +54,8 @@ public class MovieController {
 	@GetMapping(value = "/") 
 	public String index(Model model) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Pageable pageable = PageRequest.of(0, 10);
-		model.addAttribute("movies", this.movieRepository.findTop10MoviesOrderByRatingDesc(pageable));
+		Pageable pageable = PageRequest.of(0, 3);
+		model.addAttribute("movies", this.movieRepository.findTop3MoviesOrderByRatingDesc(pageable));
 		if (authentication instanceof AnonymousAuthenticationToken) {
 	        return "index.html";
 		}
@@ -131,17 +131,38 @@ public class MovieController {
 		return "movie.html";
 	}
 
-	@GetMapping("/movie")
+	@GetMapping("/movies/{pageNumber}")
+
+	public String getMoviesByPage(@PathVariable("pageNumber") Integer pageNumber,Model model) {
+		Pageable pageable = PageRequest.of((pageNumber-1), 6);
+		if(SecurityContextHolder.getContext().getAuthentication().getName() != "anonymousUser") {
+			UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
+			model.addAttribute("user", credentials.getUser());
+		}
+		int pages = (int) Math.ceil((double)this.movieRepository.countTotalMovies()/6);//Stabilisci quante pagine devo far vedere
+		
+		model.addAttribute("pages", pages);
+    	model.addAttribute("page", pageNumber);
+		model.addAttribute("movies", this.movieRepository.findAllMovies(pageable));
+		
+		return "movies.html";
+	}
+	@GetMapping("/movies")
 	public String getMovies(Model model) {
+		Pageable pageable = PageRequest.of(0, 6);
 		if(SecurityContextHolder.getContext().getAuthentication().getName() != "anonymousUser") {
 			UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
 			model.addAttribute("user", credentials.getUser());
 		}
 		
-    	
+		int pages = (int) Math.ceil((double)this.movieRepository.countTotalMovies()/6);//Stabilisci quante pagine devo far vedere
 
-		model.addAttribute("movies", this.movieRepository.findAll());
+
+		model.addAttribute("page", 1);
+		model.addAttribute("pages", pages);
+		model.addAttribute("movies", this.movieRepository.findAllMovies(pageable));
 		
 		return "movies.html";
 	}

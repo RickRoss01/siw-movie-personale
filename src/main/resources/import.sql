@@ -1,10 +1,19 @@
-insert into movie (id, title, url_image, year) values(nextval('hibernate_sequence'), 'Full metal jacket', 'https://pad.mymovies.it/filmclub/2006/04/020/locandina.jpg', 1987);
-insert into movie (id, title, url_image, year) values(nextval('hibernate_sequence'), 'Non e'' un paese per vecchi', 'https://aforismi.meglio.it/img/film/Non_%C3%A8_un_paese_per_vecchi.jpg',2007);
-insert into movie (id, title, url_image, year) values(nextval('hibernate_sequence'), 'The founder', 'https://pad.mymovies.it/filmclub/2016/03/235/locandina.jpg',2016);
-insert into movie (id, title, url_image, year) values(nextval('hibernate_sequence'), 'Harry Potter e la pietra filosofale', 'https://pad.mymovies.it/filmclub/2001/12/001/locandina.jpg',2001);
-insert into movie (id, title, url_image, year) values(nextval('hibernate_sequence'), 'Il pianeta delle scimmie', 'https://media-assets.wired.it/photos/615daad62707bc568326abfa/master/w_1600,c_limit/war-for-the-planet-of-the-apes1.jpg',2001);
-insert into movie (id, title, url_image, year) values(nextval('hibernate_sequence'), 'Lo chiamavano Jeeg Robot', 'https://www.rai.it/dl/img/2016/02/23/1280x720_1456237082397_jeegrobot.jpg',2015);
-insert into movie (id, title, url_image, year) values(nextval('hibernate_sequence'), 'Yesterday', 'https://citynews-today.stgy.ovh/~media/horizontal-mid/20648620006811/yesterday-film-poster-movie-universal-pictures-2.jpg',2019);
+insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images\No_Image_Available.jpg');
+insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images\fullmetaljacket.jpg');
+insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images\Non_e_un_paese_per_vecchi.jpg');
+insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images\The_founder.jpg');
+insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images\planet_of_the_apes.jpg');
+insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images\614uLDzaUvL._SY445_.jpg');
+insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images\yesterday film poster movie universal pictures-2.jpg');
+
+
+insert into movie (id, title, primary_image_id, year,rating) values(nextval('hibernate_sequence'), 'Full metal jacket', 2, 1987,0);
+insert into movie (id, title, primary_image_id, year,rating) values(nextval('hibernate_sequence'), 'Non e'' un paese per vecchi', 3,2007,0);
+insert into movie (id, title, primary_image_id, year,rating) values(nextval('hibernate_sequence'), 'The founder', 4,2016,0);
+insert into movie (id, title, primary_image_id, year,rating) values(nextval('hibernate_sequence'), 'Harry Potter e la pietra filosofale', 1,2001,0);
+insert into movie (id, title, primary_image_id, year,rating) values(nextval('hibernate_sequence'), 'Il pianeta delle scimmie', 5,2001,0);
+insert into movie (id, title, primary_image_id, year,rating) values(nextval('hibernate_sequence'), 'Lo chiamavano Jeeg Robot', 6,2015,0);
+insert into movie (id, title, primary_image_id, year,rating) values(nextval('hibernate_sequence'), 'Yesterday', 7,2019,0);
 
 insert into artist (id, name, surname, url_of_picture, date_of_birth) values(nextval('hibernate_sequence'), 'Tim', 'Burton', 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Tim_Burton_by_Gage_Skidmore.jpg/440px-Tim_Burton_by_Gage_Skidmore.jpg','1958-08-25');
 insert into artist (id, name, surname, url_of_picture, date_of_birth) values(nextval('hibernate_sequence'), 'Himesh', 'Patel', 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Himesh_Patel_2019_%28cropped%29.jpg/440px-Himesh_Patel_2019_%28cropped%29.jpg','1990-10-13');
