@@ -23,3 +23,37 @@
     
     margin-top: 5em;
 }
+
+#artist-card{
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    object-position: center center;
+    
+}
+
+#img-container{
+    margin: auto;
+}
+
+.containermovie{
+    display: flex;
+    
+}
+
+.container-movie img{
+    margin-left: 0;
+}
+
+#movie-container{
+    filter: blur(8px);
+  -webkit-filter: blur(8px);
+
+  /* Full height */
+  height: 100%;
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}

@@ -46,7 +46,7 @@ public class ArtistController {
 		return "artist.html";
 	}
 
-	@GetMapping("/artist")
+	@GetMapping("/artists")
 	public String getArtists(Model model) {
 		model.addAttribute("artists", this.artistRepository.findAll());
 		return "artists.html";
