@@ -46,7 +46,7 @@ public class Movie {
 	@ManyToMany
 	private Set<Artist> actors;
 	
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne
 	@JoinColumn(name="primary_image_id")
 	private Image primaryImage;
 

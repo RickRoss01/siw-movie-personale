@@ -8,11 +8,14 @@ import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -27,7 +30,12 @@ public class Artist {
 	
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate dateOfBirth;
-	private String urlOfPicture;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="image_id")
+	private Image image;
+
+	private String biography;
 	
 	@ManyToMany(mappedBy="actors")
 	private Set<Movie> starredMovies;
@@ -40,6 +48,30 @@ public class Artist {
 		this.directedMovies = new LinkedList<>();
 	}
 	
+	public Image getImage() {
+		return image;
+	}
+
+	public void setImage(Image image) {
+		this.image = image;
+	}
+
+	public Set<Movie> getStarredMovies() {
+		return starredMovies;
+	}
+
+	public void setStarredMovies(Set<Movie> starredMovies) {
+		this.starredMovies = starredMovies;
+	}
+
+	public List<Movie> getDirectedMovies() {
+		return directedMovies;
+	}
+
+	public void setDirectedMovies(List<Movie> directedMovies) {
+		this.directedMovies = directedMovies;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -72,13 +104,6 @@ public class Artist {
 		this.dateOfBirth = dateOfBirth;
 	}
 	
-	public String getUrlOfPicture() {
-		return urlOfPicture;
-	}
-	
-	public void setUrlOfPicture(String urlOfPicture) {
-		this.urlOfPicture = urlOfPicture;
-	}
 	
 	public Set<Movie> getActorOf() {
 		return starredMovies;
@@ -111,6 +136,14 @@ public class Artist {
 			return false;
 		Artist other = (Artist) obj;
 		return Objects.equals(name, other.name) && Objects.equals(surname, other.surname);
+	}
+
+	public String getBiography() {
+		return biography;
+	}
+
+	public void setBiography(String biography) {
+		this.biography = biography;
 	}
 
 }

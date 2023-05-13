@@ -3,7 +3,7 @@
 
 <head>
 	<title>
-		SiwMovie - Homepage
+		SiwMovie - Film
 	</title>
 	<link rel="stylesheet" href="/css/stile2.css" />
 </head>
@@ -36,14 +36,14 @@
 			  FIlm
 			</a>
 			<ul class="dropdown-menu">
-			  <li><a class="dropdown-item" href="/movie">Tutti i Film</a></li>
+			  <li><a class="dropdown-item" href="/movies">Tutti i Film</a></li>
 			  <li><hr class="dropdown-divider"></li>
 			  <li><a class="dropdown-item" href="#">Azione</a></li>
 			  <li><a class="dropdown-item" href="#">Horror</a></li>
 			</ul>
 		  </li>
 		  <li class="nav-item">
-			<a class="nav-link" href="/artist" >Artisti</a>
+			<a class="nav-link" href="/artists" >Artisti</a>
 		  </li>
 		</ul>
 		
@@ -69,18 +69,21 @@
 	
 	<div th:if="${!movies.isEmpty()}" class="container my-3">
 		<div class="row">
-		  <div th:each="movie, movieStat : ${movies}" class="col-md-4 col-sm-6">
-			<div class="card mb-3"style="width: 18rem;">
-			  <img th:src="${'\'+movie.primaryImage.imagePath}" class="card-img-top " id = "moviecard" alt="Movie Poster">
-			  <div class="card-body">
-				<h5 th:text="${movie.title}" class="card-title"></h5>
-				<p th:text="${movie.year}" class="card-text"></p>
-				<p th:text=" ${'Valutazione: '+movie.rating}" class="card-text">Valutazione: </p>
-				<a th:href="@{|/movie/${movie.id}|}" class="btn btn-primary">Dettagli</a>
+			<div th:each="movie, movieStat : ${movies}" class="col-md-4 col-sm-6">
+			  <div class="card mb-3" style="max-width: 80%;">
+				<img th:src="${'\'+movie.primaryImage.imagePath}" class="card-img-top " id="moviecard" alt="Movie Poster">
+				<div class="card-body">
+				  <h5 th:text="${movie.title}" class="card-title"></h5>
+				  <p th:text="${movie.year}" class="card-text"></p>
+				  <p th:text=" ${'Valutazione: '+movie.rating}" class="card-text">Valutazione: </p>
+				  <a th:href="@{|/movie/${movie.id}|}" class="btn btn-primary">Dettagli</a>
+				</div>
 			  </div>
 			</div>
 		  </div>
-		</div>
+		  
+		  
+		  
 	  </div>	  
 	  <nav aria-label="Page navigation example">
 		<ul class="pagination justify-content-center">
@@ -88,17 +91,19 @@
 			<a th:if="${page == 1}"class="page-link disabled" href="#" aria-label="Previous">
 			  <span aria-hidden="true">&laquo;</span>
 			</a>
-			<a th:unless="${page == 1}"class="page-link" href="#" aria-label="Previous">
+			<a th:unless="${page == 1}"class="page-link" th:href="@{|/movies/${page-1}|}" aria-label="Previous">
 				<span aria-hidden="true">&laquo;</span>
 			  </a>
 		  </li>
-		  <li class="page-item"><a class="page-link" href="#">1</a></li>
-		  <li class="page-item"><a class="page-link" href="#">2</a></li>
-		  <li class="page-item"><a class="page-link" href="#">3</a></li>
+		  <li th:each="i : ${#numbers.sequence(0, pages-1)}" class="page-item"><a th:if="${page == i+1}" th:text="${i+1}" class="page-link active" th:href="@{|/movies/${i+1}|}"></a>
+			<a th:unless="${page == i+1}" th:text="${i+1}" class="page-link" th:href="@{|/movies/${i+1}|}"></a></li>
 		  <li class="page-item">
-			<a class="page-link" href="#" aria-label="Next">
-			  <span aria-hidden="true">&raquo;</span>
-			</a>
+			<a th:if="${page == pages}"class="page-link disabled" href="#" aria-label="Previous">
+				<span aria-hidden="true">&raquo;</span>
+			  </a>
+			  <a th:unless="${page == pages}"class="page-link" th:href="@{|/movies/${page+1}|}" aria-label="Next">
+				  <span aria-hidden="true">&raquo;</span>
+				</a>
 		  </li>
 		</ul>
 	  </nav>
