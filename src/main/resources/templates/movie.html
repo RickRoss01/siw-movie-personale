@@ -64,13 +64,41 @@
 	</div>
   </nav>
  
-<div th:if="${movie}" th:style="'background-image:url('+'/' + ${movie.primaryImage.imagePath} + ');'" class="container my-5" id="movie-container" style="padding-top: 2em;" >
-  <div class="container-movie">
-    <h1 th:text="${movie.title}">Up!</h1>
-    <p th:text="${movie.year}">2001</p>
-    <img class="img-fluid" th:src="${'/'+movie.primaryImage.imagePath}">
+  <div th:if="${movie}"  id="movie-container" style="padding-top: 2em;">
+	<div id="blurred"><img th:src="${'/'+movie.primaryImage.imagePath}"></div>
+	<div id="black-blurred"></div>
+	<div class="container my-5" id="movie">
+	  <h1 th:text="${movie.title}">Up!</h1>
+	  <p th:text="${movie.year}">2001</p>
+	  <div class="flex-container-movie">
+		<img class="img-fluid flex-item" th:src="${'/'+movie.primaryImage.imagePath}">
+		<div id="flex-item" class="carousel slide flex-item">
+			<div class="carousel-inner">
+			  <div class="carousel-item active">
+				<img src="/images/The_founder.jpg" class="d-block w-100" alt="...">
+			  </div>
+			  <div class="carousel-item">
+				<img src="..." class="d-block w-100" alt="...">
+			  </div>
+			  <div class="carousel-item">
+				<img src="..." class="d-block w-100" alt="...">
+			  </div>
+			</div>
+			<button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+			  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+			  <span class="visually-hidden">Previous</span>
+			</button>
+			<button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+			  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+			  <span class="visually-hidden">Next</span>
+			</button>
+		  </div>
+
+	  </div>
+	  
+	  
+	</div>
   </div>
-</div>
 
 
 
