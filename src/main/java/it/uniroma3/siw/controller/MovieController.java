@@ -127,7 +127,10 @@ public class MovieController {
 
 	@GetMapping("/movie/{id}")
 	public String getMovie(@PathVariable("id") Long id, Model model) {
-		model.addAttribute("movie", this.movieRepository.findById(id).get());
+		Movie movie = this.movieRepository.findById(id).get();
+		int n = movie.getImages().size();
+		model.addAttribute("movie", movie);
+		model.addAttribute("images", movie.getImages());
 		return "movie.html";
 	}
 

@@ -17,9 +17,13 @@ insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images
 insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images/Claudio_Santamaria.jpg');
 insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images/Gabriele_Mainetti,_September_2017.jpg');
 
+insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images/full_metal_jacket.png');
+insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images/full_metal_jacket_2.png');
 
 
 insert into movie (id, title, primary_image_id, year,rating) values(nextval('hibernate_sequence'), 'Full metal jacket', 2, 1987,0);
+update image set movie_id = 19 where id=17
+update image set movie_id = 19 where id=18
 insert into movie (id, title, primary_image_id, year,rating) values(nextval('hibernate_sequence'), 'Non e'' un paese per vecchi', 3,2007,0);
 insert into movie (id, title, primary_image_id, year,rating) values(nextval('hibernate_sequence'), 'The founder', 4,2016,0);
 insert into movie (id, title, primary_image_id, year,rating) values(nextval('hibernate_sequence'), 'Harry Potter e la pietra filosofale', 1,2001,0);
