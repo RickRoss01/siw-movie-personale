@@ -63,25 +63,28 @@
 	
 	</div>
   </nav>
- 
+
+  
+
   <div th:if="${movie}"  id="movie-container" style="padding-top: 2em;">
-	<div id="blurred"><img th:src="${'/'+movie.primaryImage.imagePath}"></div>
+	<div id="blurred" th:style="'background-image: url(/'+${movie.primaryImage.imagePath}+');'" ></div>
 	<div id="black-blurred"></div>
 	<div class="container my-5" id="movie">
 	  <h1 th:text="${movie.title}">Up!</h1>
 	  <h5 th:text="${movie.year}">2001</h5>
-	  <div class="flex-container-movie">
-		<img class="img-fluid flex-item" id="movie-image" th:src="${'/'+movie.primaryImage.imagePath}">
-		<div id="carouselExample" class="carousel slide flex-item">
+	  <h5 th:text="${'Valutazione: '+movie.rating}">2001</h5>
+	  <div class="d-flex p-2">
+		<img class="img-fluid flex-item" id="movie-image" th:src="${'/'+movie.primaryImage.imagePath} ">
+		<div id="carouselExample" class="carousel slide flex-item" data-bs-ride="true" style="height: 500px;">
 			<div class="carousel-inner">
-				<div th:each="image, imageStat : ${images}">
-					<div th:if="${imageStat.index == 0}" class="carousel-item active">
-						<img th:src="${'/'+image.imagePath}" class="d-block w-100" alt="...">
-					</div>
-					<div th:unless="${imageStat.index == 0}" class="carousel-item">
-						<img th:src="${'/'+image.imagePath}" class="d-block w-100" alt="...">
-					</div>
+			  <div th:each="image, imageStat : ${images}">
+				<div th:if="${imageStat.index == 0}" class="carousel-item active">
+				  <img th:src="${'/'+image.imagePath}" class="d-block w-100" alt="...">
 				</div>
+				<div th:unless="${imageStat.index == 0}" class="carousel-item">
+				  <img th:src="${'/'+image.imagePath}" class="d-block w-100" alt="...">
+				</div>
+			  </div>
 			</div>
 			<button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
 			  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -93,10 +96,40 @@
 			</button>
 		  </div>
 		  
+		  
 
 	  </div>
-	  
-	  
+	
+	  <div class="container">
+
+		<h2 th:if="${movie.director}" th:text="${'Regia: '+movie.director.name}">Regia: Christopher Nolan</h2>
+		<h2 th:unless="${movie.director}" th:text="${'Nessun Regista'}">Regia: Christopher Nolan</h2>
+		<div class="container my-5 " th:if="${!movie.actors.isEmpty()}" >
+			<h1 class="" style="margin-bottom: 1em;">Cast</h1>
+			  
+			  <div class="row row-cols-1 row-cols-md-2 g-4 justify-content-start">
+				<div class="card mb-3 text-bg-secondary border-primary" th:each="artist, artistStat : ${movie.actors}" style="max-width: 540px; border-width: 0px; background-color: transparent !important;">
+					<div class="row g-0 " >
+					  <div class="col-md-4" id="img-container">
+						<img id="artist-card" th:src="${'\'+artist.image.imagePath}" class="img-fluid rounded-circle"  alt="..." >
+					  </div>
+					  
+					  <div class="col-md-8">
+						<div class="card-body">
+						  <h5 class="card-title" th:text="${artist.name +' '+ artist.surname}">Nome artista</h5>
+						  
+						  <a th:href="@{|/artist/${artist.id}|}" class="btn btn-primary">Dettagli</a>
+						</div>
+					  </div>
+					</div>
+				  </div>
+			  </div>
+			  
+			  
+			  
+			  
+		  </div>
+	  </div>
 	</div>
   </div>
 

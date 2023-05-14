@@ -67,7 +67,10 @@
     -o-filter: blur(20px);
     -ms-filter: blur(20px);
     filter: blur(20px);
-    height: 222px;
+    height: auto;
+    background-color: #0000008c;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 #black-blurred { 
@@ -82,7 +85,7 @@
     -o-filter: blur(20px);
     -ms-filter: blur(20px);
     filter: blur(20px);
-    height: 100%;
+    
 }
 
 #blurred img{
@@ -96,13 +99,26 @@
     color: #fff;
 }
 
-.flex-container-movie{
+#movie-container{
     display: flex;
     justify-content: flex-start;
-    display: inline-flex;
+    
     
 }
 
+@media only screen and (max-width: 800px) {
+    .d-flex {
+      flex-direction: column;
+      max-width: 100%;
+      
+    }
+    .d-flex img {
+        margin-left: auto!important;
+      }
+  }
+.d-flex img {
+        margin-left: 0;
+      }
 .flex-item img{
     margin-left: 10px;
     max-height: 500px;
