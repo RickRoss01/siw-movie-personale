@@ -56,7 +56,8 @@
     bottom: 0;
 }
 
-#blurred { position: absolute;
+#blurred { 
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
@@ -69,7 +70,8 @@
     height: 222px;
 }
 
-#black-blurred { position: absolute;
+#black-blurred { 
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
@@ -98,8 +100,14 @@
     display: flex;
     justify-content: flex-start;
     display: inline-flex;
+    
 }
 
-.flex-item{
+.flex-item img{
     margin-left: 10px;
+    max-height: 500px;
+}
+
+#movie-image{
+    max-height: 500px;
 }
