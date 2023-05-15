@@ -95,7 +95,7 @@
 #movie{
     position: relative;
     
-    font-size: 2vw;
+    
     color: #fff;
 }
 
@@ -114,10 +114,12 @@
     }
     .d-flex img {
         margin-left: auto!important;
+        
       }
   }
 .d-flex img {
         margin-left: 0;
+        
       }
 .flex-item img{
     margin-left: 10px;
@@ -127,3 +129,23 @@
 #movie-image{
     max-height: 500px;
 }
+
+.fixed-carousel .carousel-inner {
+    height: 100%;
+  }
+  
+
+  .fixed-carousel .carousel-item img {
+    object-fit: contain;
+    max-height: 100%;
+    width: auto;
+  }
+  
+  .link{
+    text-decoration: none;
+    color: white;
+  }
+
+p.flex-item {
+    text-overflow: clip;
+  }
