@@ -57,7 +57,7 @@
 }
 
 #blurred { 
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -67,14 +67,15 @@
     -o-filter: blur(20px);
     -ms-filter: blur(20px);
     filter: blur(20px);
-    height: auto;
+    height: 100%;
     background-color: #0000008c;
     background-repeat: no-repeat;
     background-size: cover;
+    background-position: 0px -200px;
 }
 
 #black-blurred { 
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;

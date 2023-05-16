@@ -30,14 +30,20 @@ import it.uniroma3.siw.controller.validator.MovieValidator;
 import it.uniroma3.siw.model.Artist;
 import it.uniroma3.siw.model.Credentials;
 import it.uniroma3.siw.model.Movie;
+import it.uniroma3.siw.model.Review;
+import it.uniroma3.siw.model.User;
 import it.uniroma3.siw.repository.ArtistRepository;
 import it.uniroma3.siw.repository.MovieRepository;
+import it.uniroma3.siw.repository.ReviewRepository;
 import it.uniroma3.siw.service.CredentialsService;
 
 @Controller
 public class MovieController {
 	@Autowired 
 	private MovieRepository movieRepository;
+
+	@Autowired 
+	private ReviewRepository reviewRepository;
 	
 	@Autowired 
 	private ArtistRepository artistRepository;
@@ -128,9 +134,18 @@ public class MovieController {
 	@GetMapping("/movie/{id}")
 	public String getMovie(@PathVariable("id") Long id, Model model) {
 		Movie movie = this.movieRepository.findById(id).get();
-		int n = movie.getImages().size();
 		model.addAttribute("movie", movie);
 		model.addAttribute("images", movie.getImages());
+		if(SecurityContextHolder.getContext().getAuthentication().getName() != "anonymousUser") {
+			UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			User user = credentialsService.getCredentials(userDetails.getUsername()).getUser();
+			Long userid = user.getId();
+			//if(reviewRepository.existsByMovieIdAndUserId(id,userid))
+				model.addAttribute("review",reviewRepository.findByMovieIdAndUserId(id,userid));
+			
+			//model.addAttribute("review", reviewRepository.findByUser(user.getId()));
+		}
+
 		return "movie.html";
 	}
 
@@ -138,11 +153,7 @@ public class MovieController {
 
 	public String getMoviesByPage(@PathVariable("pageNumber") Integer pageNumber,Model model) {
 		Pageable pageable = PageRequest.of((pageNumber-1), 6);
-		if(SecurityContextHolder.getContext().getAuthentication().getName() != "anonymousUser") {
-			UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
-			model.addAttribute("user", credentials.getUser());
-		}
+		
 		int pages = (int) Math.ceil((double)this.movieRepository.countTotalMovies()/6);//Stabilisci quante pagine devo far vedere
 		
 		model.addAttribute("pages", pages);

@@ -25,4 +25,6 @@ public interface MovieRepository extends CrudRepository<Movie, Long> {
 	@Query("SELECT COUNT(m) FROM Movie m")
     Long countTotalMovies();
 
+    
+
 }

@@ -23,6 +23,9 @@ public class AuthenticationController {
 	
 	@Autowired
 	private CredentialsService credentialsService;
+
+    @Autowired
+	private MovieController movieController;
 	
 	@GetMapping(value = "/register") 
 	public String showRegisterForm (Model model) {
@@ -46,7 +49,7 @@ public class AuthenticationController {
     	if (credentials.getRole().equals(Credentials.ADMIN_ROLE)) {
             return "admin/indexAdmin.html";
         }
-        return "index.html";
+        return movieController.index(model);
     }
 
 	@PostMapping(value = { "/register" })
