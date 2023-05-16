@@ -1,5 +1,8 @@
 package it.uniroma3.siw.model;
 
+import java.time.Instant;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
@@ -14,6 +17,10 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 
 @Entity
 public class Review {
@@ -31,9 +38,12 @@ public class Review {
 	private Integer rating;
     
     private String reviewDescription;
-    
-	private String urlImage;
 	
+	@CreationTimestamp
+    private Instant createdOn;
+
+	
+
 	@ManyToOne
 	@JoinColumn(name = "movie_id")
 	private Movie movie;
@@ -41,6 +51,8 @@ public class Review {
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
+
+
 
 	public Long getId() {
 		return id;
@@ -87,14 +99,15 @@ public class Review {
 	public void setRating(Integer rating) {
 		this.rating = rating;
 	}
-	
-	public String getUrlImage() {
-		return urlImage;
+
+	public Instant getCreatedOn() {
+		return createdOn;
 	}
 
-	public void setUrlImage(String urlImage) {
-		this.urlImage = urlImage;
+	public void setCreatedOn(Instant createdOn) {
+		this.createdOn = createdOn;
 	}
+	
 
 	@Override
 	public int hashCode() {
@@ -112,4 +125,8 @@ public class Review {
 		Review other = (Review) obj;
 		return Objects.equals(movie, other.movie) && Objects.equals(user, other.user);
 	}
+
+	
+
+	
 }
