@@ -150,3 +150,21 @@
 p.flex-item {
     text-overflow: clip;
   }
+
+.flex-container-orizzontale{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flex-container-verticale{
+    display: flex;
+    flex-direction: column;
+}
+
+.c{
+    align-items: center;
+    
+}
+
+
