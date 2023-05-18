@@ -136,12 +136,13 @@ public class MovieController {
 		Movie movie = this.movieRepository.findById(id).get();
 		model.addAttribute("movie", movie);
 		model.addAttribute("images", movie.getImages());
-		if(SecurityContextHolder.getContext().getAuthentication().getName() != "anonymousUser") {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(authentication instanceof AnonymousAuthenticationToken) {
 			UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			User user = credentialsService.getCredentials(userDetails.getUsername()).getUser();
 			Long userid = user.getId();
 			//if(reviewRepository.existsByMovieIdAndUserId(id,userid))
-				model.addAttribute("review",reviewRepository.findByMovieIdAndUserId(id,userid));
+			model.addAttribute("review",reviewRepository.findByMovieIdAndUserId(id,userid));
 			
 			//model.addAttribute("review", reviewRepository.findByUser(user.getId()));
 		}
