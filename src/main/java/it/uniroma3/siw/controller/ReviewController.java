@@ -65,9 +65,7 @@ public class ReviewController {
 	@GetMapping("/movie/{id}/writeReview")
 	public String writeReview(@PathVariable("id") Long id, Model model) {
 
-		model.addAttribute("reviews", reviewRepository.findByMovie(id));
 		model.addAttribute("movie", this.movieRepository.findById(id).get());
-
-		return "movieReviews.html";
+		return "writeReview.html";
 	}
 }
