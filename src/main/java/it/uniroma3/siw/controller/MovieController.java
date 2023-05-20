@@ -136,13 +136,16 @@ public class MovieController {
 		Movie movie = this.movieRepository.findById(id).get();
 		model.addAttribute("movie", movie);
 		model.addAttribute("images", movie.getImages());
+		Pageable pageable = PageRequest.of(0, 3);
+		model.addAttribute("reviews", this.reviewRepository.findTop3ReviewsOrderByCreatedOnDesc(movie,pageable));
+
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if(!(authentication instanceof AnonymousAuthenticationToken)) {
 			UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			User user = credentialsService.getCredentials(userDetails.getUsername()).getUser();
 			Long userid = user.getId();
 			
-				model.addAttribute("review",reviewRepository.findByMovieIdAndUserId(id,userid));
+			model.addAttribute("review",reviewRepository.findByMovieIdAndUserId(id,userid));
 			
 		}
 

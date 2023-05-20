@@ -162,6 +162,36 @@
 		  </div>
 		  
 	  </div>
+
+	  <div class="container my-5" th:if="${!reviews.isEmpty()}"  >
+		<h1 class="text-center" style="margin-bottom: 1em;">Le ultime recensioni</h1>
+		
+		
+		  
+		  
+		  
+		  <div class="row row-cols-1 row-cols-md-2 g-4">
+			<div class="card mb-3 text-bg-secondary border-primary" th:each="review, reviewStat : ${reviews}" style="max-width: 540px;">
+				<div class="row g-0" >
+				  
+				  
+				  
+					<div class="card-body">
+					  <h5 class="card-title" th:text="${review.user.name+' '+review.user.surname}">Mario rossi</h5>
+					  <h5 class="card-title" th:text="${review.title}">Bel film</h5>
+					  <p class="card-text" th:text="${review.reviewDescription}" >ottime scene</p>
+					  <h5 th:text="' '+${review.rating}"class="fa fa-star checked"  >5</h5>
+					 
+					
+				  </div>
+				</div>
+			  </div>
+		  </div>
+		  
+		  
+		  
+		  
+	  </div>
 	  
 	</div>
   </div>

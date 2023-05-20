@@ -95,12 +95,12 @@ public String writeReview(@PathVariable("id") Long id, Model model) {
 			this.reviewRepository.save(newreview); 
 			updateMovieRaing(newreview.getMovie());
 			model.addAttribute("review",reviewRepository.findByMovieIdAndUserId(movie.getId(),getCurrentUser().getId()));
+			Pageable pageable = PageRequest.of(0, 3);
+			model.addAttribute("reviews", this.reviewRepository.findTop3ReviewsOrderByCreatedOnDesc(movie,pageable));
 			return "movie.html";
 		} else {
 			model.addAttribute("movie", newreview.getMovie());
 			model.addAttribute("user", getCurrentUser());
-			//Review review = new Review();
-			//model.addAttribute("newreview", newreview );
 			return "authenticated/writeReview.html"; 
 		}
 	}
