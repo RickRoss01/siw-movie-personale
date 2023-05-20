@@ -84,7 +84,7 @@
 				<h3 >La tua Valutazione</h3>
 				<h5 th:if="${review}"th:text="' '+${review.rating}"class="fa fa-star checked" style="font-size: x-large;">4.1</h5>
 				<div th:if="${#request.userPrincipal}">
-					<a th:unless="${review}" th:href="${movie.id}+'/'+writeReview" ><button type="button" class="btn btn-success">Valuta</button></a>
+					<a th:unless="${review}" th:href="'/authenticated/writeReview/'+${movie.id}" ><button type="button" class="btn btn-success">Valuta</button></a>
 					
 				</div>
 				<div th:unless="${#request.userPrincipal}">

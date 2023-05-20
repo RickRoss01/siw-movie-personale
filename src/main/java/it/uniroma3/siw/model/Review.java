@@ -19,9 +19,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.CreationTimestamp;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
-
 @Entity
 public class Review {
 
@@ -37,17 +34,20 @@ public class Review {
     @Max(5)
 	private Integer rating;
     
+	@NotNull
+	@NotBlank
     private String reviewDescription;
 	
 	@CreationTimestamp
     private Instant createdOn;
 
 	
-
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "movie_id")
 	private Movie movie;
 	
+	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;

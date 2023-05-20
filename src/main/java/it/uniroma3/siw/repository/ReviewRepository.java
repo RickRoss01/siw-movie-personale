@@ -24,4 +24,7 @@ public interface ReviewRepository extends CrudRepository<Review, Long> {
 	public boolean existsByMovieIdAndUserId(Long movieId, Long userId);
 
 	public Review findByMovieIdAndUserId(Long movieId, Long userId);
+
+	@Query("SELECT AVG(r.rating) FROM Review r WHERE r.movie = :movie")
+	Float getAvgRating(@Param("movie") Movie movie);
 }

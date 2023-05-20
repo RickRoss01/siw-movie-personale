@@ -15,7 +15,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import javax.sql.DataSource;
 
 import static it.uniroma3.siw.model.Credentials.ADMIN_ROLE;
-//import static it.uniroma3.siw.model.Credentials.DEFAULT_ROLE;
+import static it.uniroma3.siw.model.Credentials.DEFAULT_ROLE;
 
 @Configuration
 @EnableWebSecurity
@@ -41,9 +41,11 @@ public class AuthConfiguration extends WebSecurityConfigurerAdapter {
 		.antMatchers(HttpMethod.GET, "/", "/index", "/login", "/register", "/css/**", "/images/**", "favicon.ico","/movie/**","/movies/**","/foundmMovies","/artists","/artist/**").permitAll()
 		// chiunque (autenticato o no) può mandare richieste POST al punto di accesso per login e register 
 		.antMatchers(HttpMethod.POST, "/login", "/register","/searchMovies").permitAll()
+		// solo gli utenti autenticati possono accedere a risorse con path /authenticated/**
+		.antMatchers(HttpMethod.GET, "/authenticated/**").hasAnyAuthority(DEFAULT_ROLE)
 		// solo gli utenti autenticati con ruolo ADMIN possono accedere a risorse con path /admin/**
-		.antMatchers(HttpMethod.GET, "/admin/**").hasAnyAuthority(ADMIN_ROLE)
-		.antMatchers(HttpMethod.POST, "/admin/**").hasAnyAuthority(ADMIN_ROLE)
+		.antMatchers(HttpMethod.GET, "/admin/**","/authenticated/**").hasAnyAuthority(ADMIN_ROLE)
+		.antMatchers(HttpMethod.POST, "/admin/**","/authenticated/**").hasAnyAuthority(ADMIN_ROLE)
 		// tutti gli utenti autenticati possono accere alle pagine rimanenti 
 		.anyRequest().authenticated()
 		.and().exceptionHandling().accessDeniedPage("/index")
