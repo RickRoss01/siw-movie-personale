@@ -1,17 +1,12 @@
 package it.uniroma3.siw.model;
 
 import java.time.Instant;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Objects;
-import java.util.Set;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
