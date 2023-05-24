@@ -60,7 +60,7 @@ public class MovieController {
 		if (authentication instanceof AnonymousAuthenticationToken) {
 	        return "index.html";
 		}
-		model.addAttribute("isAdmin",authentication.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ADMIN")));
+		model.addAttribute("isAdmin",isAdmin());
 
         return "index.html";
 	}
@@ -123,6 +123,7 @@ public class MovieController {
 
 	@GetMapping("/movie/{id}")
 	public String getMovie(@PathVariable("id") Long id, Model model) {
+		model.addAttribute("isAdmin",isAdmin());
 		Movie movie = this.movieRepository.findById(id).get();
 		model.addAttribute("movie", movie);
 		model.addAttribute("images", movie.getImages());
@@ -145,6 +146,7 @@ public class MovieController {
 	@GetMapping("/movies/{pageNumber}")
 
 	public String getMoviesByPage(@PathVariable("pageNumber") Integer pageNumber,Model model) {
+		model.addAttribute("isAdmin",isAdmin());
 		Pageable pageable = PageRequest.of((pageNumber-1), 6);
 		
 		int pages = (int) Math.ceil((double)this.movieRepository.countTotalMovies()/6);//Stabilisci quante pagine devo far vedere
@@ -157,6 +159,7 @@ public class MovieController {
 	}
 	@GetMapping("/movies")
 	public String getMovies(Model model) {
+		model.addAttribute("isAdmin",isAdmin());
 		Pageable pageable = PageRequest.of(0, 6);
 		if(SecurityContextHolder.getContext().getAuthentication().getName() != "anonymousUser") {
 			UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -181,6 +184,7 @@ public class MovieController {
 
 	@PostMapping("/searchMovies")
 	public String searchMovies(Model model, @RequestParam String year) {
+		model.addAttribute("isAdmin",isAdmin());
 		Pageable pageable = PageRequest.of(0, 6);
 		List<Movie> foundMovies = this.movieRepository.findByTitleContainingIgnoreCase(year,pageable);
 		int pages = (int) Math.ceil((double)foundMovies.size()/6);//Stabilisci quante pagine devo far vedere
@@ -233,7 +237,9 @@ public class MovieController {
 
 		return "admin/actorsToAdd.html";
 	}
-
+	public boolean isAdmin() {
+		return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ADMIN"));
+	}
 	private List<Artist> actorsToAdd(Long movieId) {
 		List<Artist> actorsToAdd = new ArrayList<>();
 

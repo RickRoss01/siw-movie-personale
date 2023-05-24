@@ -39,7 +39,7 @@ public class ReviewController {
 
 	@GetMapping("/movie/{id}/reviews")
 	public String getMovieReviews(@PathVariable("id") Long id, Model model) {
-
+		model.addAttribute("isAdmin",isAdmin());
 		model.addAttribute("reviews", reviewRepository.findByMovie(id));
 		model.addAttribute("movie", this.movieRepository.findById(id).get());
 
@@ -61,7 +61,7 @@ public String writeReview(@PathVariable("id") Long id, Model model) {
 
 	@PostMapping("/newReview")
 	public String newReview(@Valid @ModelAttribute("newreview") Review newreview,  BindingResult bindingResult, Model model) {
-		
+		model.addAttribute("isAdmin",isAdmin());
 		
 		this.reviewValidator.validate(newreview, bindingResult);
 		if (!bindingResult.hasErrors()) {
@@ -91,4 +91,7 @@ public String writeReview(@PathVariable("id") Long id, Model model) {
 		return(credentialsService.getCredentials(userDetails.getUsername()).getUser());
 	}
 
+	public boolean isAdmin() {
+		return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ADMIN"));
+	}
 }

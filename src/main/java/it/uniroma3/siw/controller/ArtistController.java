@@ -3,6 +3,7 @@ package it.uniroma3.siw.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,9 @@ public class ArtistController {
 	
 	@Autowired 
 	private ArtistRepository artistRepository;
+
+	@Autowired 
+	private MovieController movieController;
 
 	@GetMapping(value="/admin/formNewArtist")
 	public String formNewArtist(Model model) {
@@ -44,6 +48,7 @@ public class ArtistController {
 
 	@GetMapping("/artist/{id}")
 	public String getArtist(@PathVariable("id") Long id, Model model) {
+		model.addAttribute("isAdmin",isAdmin());
 		Pageable pageable = PageRequest.of(0, 3);
 		model.addAttribute("artist", this.artistRepository.findById(id).get());
 		model.addAttribute("topDirectorMovies", this.artistRepository.findTopDirectorMoviesOrderByRatingDesc(pageable,id));
@@ -53,7 +58,11 @@ public class ArtistController {
 
 	@GetMapping("/artists")
 	public String getArtists(Model model) {
+		model.addAttribute("isAdmin",isAdmin());
 		model.addAttribute("artists", this.artistRepository.findAll());
 		return "artists.html";
+	}
+	public boolean isAdmin() {
+		return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ADMIN"));
 	}
 }
