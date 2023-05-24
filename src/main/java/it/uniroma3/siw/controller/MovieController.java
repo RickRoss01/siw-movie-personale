@@ -60,13 +60,8 @@ public class MovieController {
 		if (authentication instanceof AnonymousAuthenticationToken) {
 	        return "index.html";
 		}
-		else {		
-			UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
-			if (credentials.getRole().equals(Credentials.ADMIN_ROLE)) {
-				return "admin/indexAdmin.html";
-			}
-		}
+		model.addAttribute("isAdmin",authentication.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ADMIN")));
+
         return "index.html";
 	}
 
@@ -186,7 +181,14 @@ public class MovieController {
 
 	@PostMapping("/searchMovies")
 	public String searchMovies(Model model, @RequestParam String year) {
-		model.addAttribute("movies", this.movieRepository.findByTitleContainingIgnoreCase(year));
+		Pageable pageable = PageRequest.of(0, 6);
+		List<Movie> foundMovies = this.movieRepository.findByTitleContainingIgnoreCase(year,pageable);
+		int pages = (int) Math.ceil((double)foundMovies.size()/6);//Stabilisci quante pagine devo far vedere
+
+
+		model.addAttribute("page", 1);
+		model.addAttribute("pages", pages);
+		model.addAttribute("movies", foundMovies);
 		return "foundMovies.html";
 	}
 	

@@ -12,7 +12,7 @@ public interface MovieRepository extends CrudRepository<Movie, Long> {
 	public List<Movie> findByYear(int year);
 
 	
-	public List<Movie> findByTitleContainingIgnoreCase(String title);
+	public List<Movie> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 
 	public boolean existsByTitleAndYear(String title, int year);
 
