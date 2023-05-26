@@ -1,5 +1,6 @@
 package it.uniroma3.siw.model;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -43,6 +44,7 @@ public class Movie {
 	@ManyToMany
 	private Set<Artist> actors;
 	
+	@NotNull
 	@OneToOne
 	@JoinColumn(name="primary_image_id")
 	private Image primaryImage;
@@ -57,6 +59,9 @@ public class Movie {
 	
 	public Movie() {
 		this.rating = 0.0f;
+		this.actors = new HashSet<Artist>();
+		this.reviews = new HashSet<Review>();
+		this.images = new HashSet<Image>();
 	}
 
 	public Float getRating() {

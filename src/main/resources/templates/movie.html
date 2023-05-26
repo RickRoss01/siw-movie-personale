@@ -71,7 +71,7 @@
   
 
   <div th:if="${movie}"  id="movie-container" style="padding-top: 2em;">
-	<div id="blurred" th:style="'background-image: url(/'+${movie.primaryImage.imagePath}+');'" ></div>
+	<div id="blurred" th:if="${movie.primaryImage}" th:style="'background-image: url(/'+${movie.primaryImage.imagePath}+');'" ></div>
 	<div id="black-blurred"></div>
 	<div class="container my-5" id="movie">
 		<div class="flex-container-orizzontale">
@@ -108,7 +108,7 @@
 	  
 	  <div class="d-flex p-2">
 		
-		<img class="img-fluid flex-item" id="movie-image" th:src="${'/'+movie.primaryImage.imagePath} ">
+		<img class="img-fluid flex-item" th:if="${movie.primaryImage}" id="movie-image" th:src="${'/'+movie.primaryImage.imagePath} ">
 		<div id="carouselExample" class="carousel slide flex-item fixed-carousel" data-bs-ride="true" style="height: 500px; ">
 			<div class="carousel-inner">
 			  <div th:each="image, imageStat : ${images}">

@@ -1,10 +1,13 @@
 package it.uniroma3.siw.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Null;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -20,17 +23,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import it.uniroma3.siw.controller.validator.MovieValidator;
 import it.uniroma3.siw.model.Artist;
 import it.uniroma3.siw.model.Credentials;
+import it.uniroma3.siw.model.Image;
 import it.uniroma3.siw.model.Movie;
 import it.uniroma3.siw.model.User;
 import it.uniroma3.siw.repository.ArtistRepository;
 import it.uniroma3.siw.repository.MovieRepository;
 import it.uniroma3.siw.repository.ReviewRepository;
 import it.uniroma3.siw.service.CredentialsService;
+import it.uniroma3.siw.service.StorageService;
 
 @Controller
 public class MovieController {
@@ -48,9 +56,9 @@ public class MovieController {
 	
 	@Autowired 
 	private CredentialsService credentialsService;
+	@Autowired
+	private StorageService service;
 	
-	
-
 
 	@GetMapping(value = "/") 
 	public String index(Model model) {
@@ -68,6 +76,7 @@ public class MovieController {
 	@GetMapping(value="/admin/formNewMovie")
 	public String formNewMovie(Model model) {
 		model.addAttribute("movie", new Movie());
+		model.addAttribute("directors",artistRepository.findAll());
 		return "admin/formNewMovie.html";
 	}
 
@@ -84,7 +93,27 @@ public class MovieController {
 	
 	@GetMapping(value="/admin/manageMovies")
 	public String manageMovies(Model model) {
-		model.addAttribute("movies", this.movieRepository.findAll());
+		Pageable pageable = PageRequest.of(0, 6);
+		int pages = (int) Math.ceil((double)this.movieRepository.countTotalMovies()/6);//Stabilisci quante pagine devo far vedere
+
+
+		model.addAttribute("page", 1);
+		model.addAttribute("pages", pages);
+		model.addAttribute("movies", this.movieRepository.findAllMovies(pageable));
+		
+		return "admin/manageMovies.html";
+	}
+	@GetMapping("/admin/manageMovies/{pageNumber}")
+
+	public String getToModifyMoviesByPage(@PathVariable("pageNumber") Integer pageNumber,Model model) {
+		Pageable pageable = PageRequest.of((pageNumber-1), 6);
+		
+		int pages = (int) Math.ceil((double)this.movieRepository.countTotalMovies()/6);//Stabilisci quante pagine devo far vedere
+		
+		model.addAttribute("pages", pages);
+    	model.addAttribute("page", pageNumber);
+		model.addAttribute("movies", this.movieRepository.findAllMovies(pageable));
+		
 		return "admin/manageMovies.html";
 	}
 	
@@ -108,15 +137,35 @@ public class MovieController {
 		return "admin/directorsToAdd.html";
 	}
 
-	@PostMapping("/admin/movie")
-	public String newMovie(@Valid @ModelAttribute("movie") Movie movie, BindingResult bindingResult, Model model) {
+	@PostMapping("/admin/newMovie")
+	public String newMovie(@Valid @ModelAttribute("movie") Movie movie,BindingResult bindingResult,@RequestParam("image")MultipartFile file,@RequestParam("images")MultipartFile files[],Model model) throws IOException, InterruptedException {
 		
 		this.movieValidator.validate(movie, bindingResult);
 		if (!bindingResult.hasErrors()) {
+			Image image = service.uploadImageToFileSystem(file,movie);
+			movie.setPrimaryImage(image);
+			
+			
 			this.movieRepository.save(movie); 
+			
 			model.addAttribute("movie", movie);
+			model.addAttribute("images", movie.getImages());
+			model.addAttribute("isAdmin",isAdmin());
+			Pageable pageable = PageRequest.of(0, 3);
+			model.addAttribute("reviews", this.reviewRepository.findTop3ReviewsOrderByCreatedOnDesc(movie,pageable));
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			if(!(authentication instanceof AnonymousAuthenticationToken)) {
+				UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+				User user = credentialsService.getCredentials(userDetails.getUsername()).getUser();
+				Long userid = user.getId();
+			
+				model.addAttribute("review",reviewRepository.findByMovieIdAndUserId(movie.getId(),userid));
+			
+		}
+			TimeUnit.SECONDS.sleep(1);
 			return "movie.html";
 		} else {
+			model.addAttribute("directors",artistRepository.findAll());
 			return "admin/formNewMovie.html"; 
 		}
 	}

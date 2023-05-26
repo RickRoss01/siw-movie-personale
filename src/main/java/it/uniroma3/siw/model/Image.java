@@ -7,8 +7,17 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 
 @Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Image {
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,23 +29,12 @@ public class Image {
 
     private String imagePath;
 
+	private String type;
+
 
     @ManyToOne
     @JoinColumn(name = "movie_id")
-    private Movie movie;
-    
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
+    private Movie movie;	
 
 	public String getImagePath() {
 		return imagePath;
@@ -50,6 +48,12 @@ public class Image {
 		return movie;
 	}
 
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
 
 	public void setMovie(Movie movie) {
 		this.movie = movie;
@@ -70,5 +74,6 @@ public class Image {
 		return Objects.equals(id, other.id) && Objects.equals(imagePath, other.imagePath)
 				&& Objects.equals(movie, other.movie) && Objects.equals(name, other.name);
 	}
+	
 
 }
