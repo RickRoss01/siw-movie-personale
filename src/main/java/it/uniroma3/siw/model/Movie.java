@@ -44,7 +44,7 @@ public class Movie {
 	@ManyToMany
 	private Set<Artist> actors;
 	
-	@NotNull
+	
 	@OneToOne
 	@JoinColumn(name="primary_image_id")
 	private Image primaryImage;
@@ -84,6 +84,10 @@ public class Movie {
 
 	public void setReviews(Set<Review> reviews) {
 		this.reviews = reviews;
+	}
+
+	public void addImage(Image image){
+		this.images.add(image);
 	}
 
 	public void setImages(Set<Image> images) {

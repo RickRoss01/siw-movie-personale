@@ -23,10 +23,10 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @NotBlank
+    
     private String name;
 
-
+	@NotBlank
     private String imagePath;
 
 	private String type;

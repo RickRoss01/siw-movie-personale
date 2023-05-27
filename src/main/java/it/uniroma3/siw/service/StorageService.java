@@ -24,7 +24,7 @@ public class StorageService {
     
 
 
-    public Image uploadImageToFileSystem(MultipartFile file, Movie movie) throws IOException {
+    public Image uploadImageToFileSystem(MultipartFile file) throws IOException {
         String filePath=FOLDER_PATH+file.getOriginalFilename();
         String imagePath = "images/"+file.getOriginalFilename();
 		

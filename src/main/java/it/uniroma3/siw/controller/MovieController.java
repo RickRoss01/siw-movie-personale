@@ -2,6 +2,7 @@ package it.uniroma3.siw.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -138,13 +139,21 @@ public class MovieController {
 	}
 
 	@PostMapping("/admin/newMovie")
-	public String newMovie(@Valid @ModelAttribute("movie") Movie movie,BindingResult bindingResult,@RequestParam("image")MultipartFile file,@RequestParam("images")MultipartFile files[],Model model) throws IOException, InterruptedException {
+	public String newMovie(@Valid @ModelAttribute("movie") Movie movie,BindingResult bindingResult,@RequestParam("image")MultipartFile file,@RequestParam("movieimages")MultipartFile[] files,Model model) throws IOException, InterruptedException {
 		
 		this.movieValidator.validate(movie, bindingResult);
 		if (!bindingResult.hasErrors()) {
-			Image image = service.uploadImageToFileSystem(file,movie);
+			Image image = service.uploadImageToFileSystem(file);
 			movie.setPrimaryImage(image);
 			
+			Arrays.stream(files).forEach(multipartFile -> {
+				try {
+					movie.addImage(service.uploadImageToFileSystem(multipartFile));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
 			
 			this.movieRepository.save(movie); 
 			

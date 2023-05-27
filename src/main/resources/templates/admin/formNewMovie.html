@@ -125,7 +125,7 @@
 					<div class="mb-3">
 						<label for="exampleFormControlTextarea1" class="form-label">Regista</label>
 						<select class="form-select" id ="director" name="director" >
-						  <option selected>Seleziona un regista</option>
+						  <option value ="" selected>Seleziona un regista</option>
 						  
 						  <option th:each="director, directorStat : ${directors}" th:text="${director.name + ' ' + director.surname}" th:value="${director.id}" >Christopher Nolan</option>
 						</select>
@@ -138,7 +138,7 @@
 					  </div>
 					  <div class="mb-3">
 						<label for="formFile" class="form-label">Immagini film</label>
-						<input class="form-control" type="file" id="images" name="images" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+						<input multiple class="form-control" type="file" id="movieimages" name="movieimages" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
 						
 					  </div>
 					<div class="mb-3">
