@@ -34,6 +34,7 @@ import it.uniroma3.siw.model.Artist;
 import it.uniroma3.siw.model.Credentials;
 import it.uniroma3.siw.model.Image;
 import it.uniroma3.siw.model.Movie;
+import it.uniroma3.siw.model.Review;
 import it.uniroma3.siw.model.User;
 import it.uniroma3.siw.repository.ArtistRepository;
 import it.uniroma3.siw.repository.MovieRepository;
@@ -83,7 +84,14 @@ public class MovieController {
 
 	@GetMapping(value="/admin/formUpdateMovie/{id}")
 	public String formUpdateMovie(@PathVariable("id") Long id, Model model) {
+		model.addAttribute("isAdmin",isAdmin());
+		Movie movie = this.movieRepository.findById(id).get();
 		model.addAttribute("movie", movieRepository.findById(id).get());
+		Pageable pageable = PageRequest.of(0, 3);
+		model.addAttribute("reviews", this.reviewRepository.findTop3ReviewsOrderByCreatedOnDesc(movie,pageable));
+
+		model.addAttribute("review",getLoggedUserMovieReview(id, model));
+
 		return "admin/formUpdateMovie.html";
 	}
 
@@ -188,17 +196,22 @@ public class MovieController {
 		Pageable pageable = PageRequest.of(0, 3);
 		model.addAttribute("reviews", this.reviewRepository.findTop3ReviewsOrderByCreatedOnDesc(movie,pageable));
 
+		model.addAttribute("review",getLoggedUserMovieReview(id, model));
+
+		return "movie.html";
+	}
+
+	private Review getLoggedUserMovieReview(Long id, Model model) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if(!(authentication instanceof AnonymousAuthenticationToken)) {
 			UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			User user = credentialsService.getCredentials(userDetails.getUsername()).getUser();
 			Long userid = user.getId();
 			
-			model.addAttribute("review",reviewRepository.findByMovieIdAndUserId(id,userid));
+			return reviewRepository.findByMovieIdAndUserId(id,userid);
 			
 		}
-
-		return "movie.html";
+		return null;
 	}
 
 	@GetMapping("/movies/{pageNumber}")
