@@ -38,7 +38,7 @@ public class ArtistController {
 		return "admin/indexArtist.html";
 	}
 	
-	@PostMapping("/admin/artist")
+	@PostMapping("/admin/newArtist")
 	public String newArtist(@ModelAttribute("artist") Artist artist, Model model) {
 		if (!artistRepository.existsByNameAndSurname(artist.getName(), artist.getSurname())) {
 			this.artistRepository.save(artist); 

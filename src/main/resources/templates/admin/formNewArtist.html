@@ -1,51 +1,139 @@
 <!DOCTYPE html>
-<html>
+<html data-bs-theme="dark">
 
 <head>
 	<title>
-		New Artist
+		SiwMovie - Scrivi Recensione
 	</title>
-	<link rel="stylesheet" href="/css/stile.css" />
+	<link rel="stylesheet" href="/css/stile2.css" />
+</head>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Film</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 </head>
 
 <body>
-	<header>
-		<div th:if="${#request.userPrincipal}">
-			<span th:text="${#request.userPrincipal.principal.username}"></span>
-			<a href="/logout">Logout</a>
-		</div>
-		<div th:unless="${#request.userPrincipal}">
-			<a href="/login">Login</a>
-		</div>
-	</header>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+		crossorigin="anonymous"></script>
+	<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
 
-	<div><a href="/"><img src="/images/logo-siw.png" width="50%"/></a></div>
-	<h1>Aggiungi un artista</h1>
-	<form th:action="@{/admin/artist}" method="POST" th:object="${artist}">
-		<div>
-			<span th:text="${messaggioErrore}">Errore</span>
+		<div class="container-fluid" style="max-width: 1500px;">
+			<a class="navbar-brand" href="/">SiwMovie</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll"
+				aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarScroll">
+				<ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+					<li class="nav-item">
+						<a class="nav-link active" aria-current="page" href="/">Home</a>
+					</li>
+
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+							aria-expanded="false">
+							FIlm
+						</a>
+						<ul class="dropdown-menu">
+							<li><a class="dropdown-item" href="/movies">Tutti i Film</a></li>
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+							<li><a class="dropdown-item" href="#">Azione</a></li>
+							<li><a class="dropdown-item" href="#">Horror</a></li>
+						</ul>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="/artists">Artisti</a>
+					</li>
+					
+				</ul>
+
+				<form class="d-flex flex-grow-1" th:action="@{/searchMovies}" method="post"
+					style="margin-right: 100px; ">
+					<input class="form-control me-2" th:value="${year}" name="year" type="search"
+						placeholder="Cerca un film!" aria-label="Search">
+					<button class="btn btn-outline-success" type="submit">Cerca</button>
+				</form>
+				<div th:if="${#request.userPrincipal}" style="margin-left: 10%;">
+					<span>Ciao, </span>
+					<span th:text="${#request.userPrincipal.principal.username}"> </span>
+					<button class="btn btn-outline-success" type="submit"><a id="loginbutton"
+							href="/logout">Logout</a></button>
+				</div>
+				<div th:unless="${#request.userPrincipal}">
+					<button class="btn btn-outline-success" type="submit"><a id="loginbutton"
+							href="/login">Login</a></button>
+				</div>
+			</div>
+
 		</div>
+	</nav>
+
+
+
+	
 		
-		<div>
-			<label>Nome:</label> <span><input required type="text" th:field="${artist.name}" /></span>
-		</div>
+		<div id="black-blurred"></div>
+		<div class="container my-5" id="movie">
+			<div class="flex-container-orizzontale">
+				<div class="flex-container-verticale">
+					<h1 style="padding-top: 5%;">Nuovo Film</h1>
+					
+				</div>
 
-		<div>
-			<label>Cognome:</label> <span><input required type="text" th:field="${artist.surname}" /></span>
-		</div>
 
-		<div>
-			<label>Data di nascita:</label> <span><input type="date" th:field="${artist.dateOfBirth}" /></span>
-		</div>
+			</div>
 
-		<div>
-			<label>Fotografia (url):</label> <span><input type="text" th:field="${artist.urlOfPicture}" /></span>
+			<div class="d-flex p-2 justify-content-between align-items-center">
+
+
+
+
+			</div>
+			<div class="container review">
+				<form class="row g-3" th:action="@{/admin/newArtist}" method="POST" th:object="${artist}" enctype="multipart/form-data">
+					<div th:if="${#fields.hasGlobalErrors()}">
+						
+							<div class="alert alert-danger" role="alert" th:each="err : ${#fields.globalErrors()}" th:text="${err}">
+							A simple danger alert with <a href="#" class="alert-link">an example link</a>. Give it a click if you like.
+						  </div>
+					</div>
+					<div class="col-md-4">
+						<label for="name" class="form-label">Nome</label>
+						<input th:if="${!#fields.hasErrors('name')}" type="text" class="form-control" id="name" th:field="*{name}" placeholder="">
+						<input th:if="${#fields.hasErrors('name')}" type="text" class="form-control is-invalid" id="name" th:field="*{name}" placeholder="">
+						<div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+					</div>
+					<div class="col-md-4">
+						<label for="surname" class="form-label">Cognome</label>
+						<input th:if="${!#fields.hasErrors('surname')}" class="form-control" rows="3" th:field="*{surname}"></input>
+						<input th:if="${#fields.hasErrors('surname')}" class="form-control is-invalid" rows="3" th:field="*{surname}"></input>
+						<div class="invalid-feedback" th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></div>
+						
+						
+					</div>
+					
+					  
+					  
+					<div class="mb-3">
+						<button class="btn btn-primary" type="submit">Crea Attore</button>
+					</div>
+				</form>
+			</div>
+			
 		</div>
-		
-		<div>
-			<span><button type="submit">Conferma</button></span>
-		</div>
-	</form>
+			
+	</div>
 </body>
 
 </html>
