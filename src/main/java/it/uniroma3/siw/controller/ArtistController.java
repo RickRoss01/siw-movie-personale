@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import it.uniroma3.siw.model.Artist;
 import it.uniroma3.siw.repository.ArtistRepository;
+import it.uniroma3.siw.service.ArtistService;
 
 @Controller
 public class ArtistController {
@@ -22,6 +23,9 @@ public class ArtistController {
 
 	@Autowired 
 	private MovieController movieController;
+
+	@Autowired
+	private ArtistService artistService;
 
 	@GetMapping(value="/admin/formNewArtist")
 	public String formNewArtist(Model model) {
@@ -58,10 +62,67 @@ public class ArtistController {
 
 	@GetMapping("/artists")
 	public String getArtists(Model model) {
+		Pageable pageable = PageRequest.of(0, 6);
+		int pages = (int) Math.ceil((double)this.artistRepository.countTotalArtists()/6);//Stabilisci quante pagine devo far vedere
+
+
+		model.addAttribute("page", 1);
+		model.addAttribute("pages", pages);
+
 		model.addAttribute("isAdmin",isAdmin());
-		model.addAttribute("artists", this.artistRepository.findAll());
+		model.addAttribute("artists", this.artistRepository.findAllArtists(pageable));
 		return "artists.html";
 	}
+
+	@GetMapping("/artists/{pageNumber}")
+	public String getArtistsByPage(@PathVariable("pageNumber") Integer pageNumber, Model model) {
+		Pageable pageable = PageRequest.of((pageNumber-1), 6);
+		
+		int pages = (int) Math.ceil((double)this.artistRepository.countTotalArtists()/6);//Stabilisci quante pagine devo far vedere
+		
+		model.addAttribute("pages", pages);
+    	model.addAttribute("page", pageNumber);
+		model.addAttribute("isAdmin",isAdmin());
+		model.addAttribute("artists", this.artistRepository.findAllArtists(pageable));
+		return "artists.html";
+	}
+	
+
+	@GetMapping("/admin/manageArtists")
+	public String manageArtists(Model model) {
+		Pageable pageable = PageRequest.of(0, 6);
+		int pages = (int) Math.ceil((double)this.artistRepository.countTotalArtists()/6);//Stabilisci quante pagine devo far vedere
+
+
+		model.addAttribute("page", 1);
+		model.addAttribute("pages", pages);
+
+		model.addAttribute("isAdmin",isAdmin());
+		model.addAttribute("artists", this.artistRepository.findAllArtists(pageable));
+		return "admin/manageArtists.html";
+	}
+
+	@GetMapping("/admin/deleteArtist/{artistid}")
+	public String manageArtists(@PathVariable("artistid") Long artistId , Model model) {
+		this.artistService.deleteArtist(artistId);
+		model.addAttribute("operation", "Artista Cancellato");
+		return manageArtists(model);
+	}
+
+	@GetMapping("/admin/manageArtists/{pageNumber}")
+	public String getManageArtistsByPage(@PathVariable("pageNumber") Integer pageNumber, Model model) {
+		Pageable pageable = PageRequest.of((pageNumber-1), 6);
+		
+		int pages = (int) Math.ceil((double)this.artistRepository.countTotalArtists()/6);//Stabilisci quante pagine devo far vedere
+		
+		model.addAttribute("pages", pages);
+    	model.addAttribute("page", pageNumber);
+		model.addAttribute("isAdmin",isAdmin());
+		model.addAttribute("artists", this.artistRepository.findAllArtists(pageable));
+		return "admin/manageArtists.html";
+	}
+	
+
 	public boolean isAdmin() {
 		return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ADMIN"));
 	}

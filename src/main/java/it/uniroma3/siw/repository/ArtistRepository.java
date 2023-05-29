@@ -29,4 +29,9 @@ public interface ArtistRepository extends CrudRepository<Artist, Long> {
 	@Query("SELECT m FROM Movie m JOIN m.actors a WHERE a.id = :actorId ORDER BY m.rating DESC")
 List<Movie> findTopActorMoviesOrderByRatingDesc(Pageable pageable, @Param("actorId") Long id);
 
+	@Query("SELECT COUNT(a) FROM Artist a")
+	Long countTotalArtists();
+
+	@Query("SELECT a FROM Artist a")
+	List<Artist> findAllArtists(Pageable pageable);
 }

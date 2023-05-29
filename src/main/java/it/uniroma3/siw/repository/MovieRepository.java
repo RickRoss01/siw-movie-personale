@@ -16,10 +16,10 @@ public interface MovieRepository extends CrudRepository<Movie, Long> {
 
 	public boolean existsByTitleAndYear(String title, int year);
 
-	@Query("SELECT m FROM Movie m JOIN FETCH m.primaryImage ORDER BY m.rating DESC")
+	@Query("SELECT m FROM Movie m ORDER BY m.rating DESC")
 	List<Movie> findTop3MoviesOrderByRatingDesc(Pageable pageable);
 
-	@Query("SELECT m FROM Movie m JOIN FETCH m.primaryImage ORDER BY m.rating DESC")
+	@Query("SELECT m FROM Movie m ORDER BY m.rating DESC")
 	List<Movie> findAllMovies(Pageable pageable);
 
 	@Query("SELECT COUNT(m) FROM Movie m")

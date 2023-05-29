@@ -134,13 +134,25 @@
 
 	  </div>
 	
-	  <div class="container">
+	  <div class="d-flex align-items-end">
 		<a th:if="${movie.director}" th:href="@{|/artist/${movie.director.id}|}" class="link">
 			<h2 th:text="${'Regia: '+movie.director.name+' '+movie.director.surname}">Regia: Christopher Nolan</h2>
 		</a>
 		<h2 th:unless="${movie.director}" th:text="${'Nessun Regista'}">Regia: Christopher Nolan</h2>
+		<a th:href="@{|/admin/addDirector/${movie.id}|}" >
+			<h5 class="clickable-link" >Modifica regista</h5>
+		</a>
+	</div>
+		<div class="container">
+		
 		<div class="container my-5 " th:if="${!movie.actors.isEmpty()}" >
-			<h1 class="" style="margin-bottom: 1em;">Cast</h1>
+
+			<div class="d-flex align-items-end">
+				<h1 class="" >Cast</h1>
+				<a th:href="@{|/admin/updateActors/${movie.id}|}" >
+					<h5 class="clickable-link" >Modifica Cast</h5>
+				</a>
+			</div>
 			  
 			  <div class="row row-cols-1 row-cols-md-2 g-4 justify-content-start">
 				<div class="card mb-3 text-bg-secondary border-primary" th:each="artist, artistStat : ${movie.actors}" style="max-width: 540px; border-width: 0px; background-color: transparent !important;">
@@ -161,7 +173,17 @@
 					</div>
 				  </div>
 			  </div> 
-			   
+			</div> 
+		  	<div class="container my-5 " th:unless="${!movie.actors.isEmpty()}">
+		  		<div class="d-flex align-items-end">
+					<h1 class="" >Nessun membro del cast</h1>
+					<a th:href="@{|/admin/updateActors/${movie.id}|}" >
+						<h5 class="clickable-link" >Modifica Cast</h5>
+					</a>
+				</div>
+		  	</div>
+		  <div>
+
 		  </div>
 		  
 	  </div>

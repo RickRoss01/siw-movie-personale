@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -20,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -137,6 +139,17 @@ public class MovieController {
 		model.addAttribute("movie", movie);
 		return "admin/formUpdateMovie.html";
 	}
+
+	@GetMapping(value="/admin/deleteMovie/{movieId}")
+	public String deleteMovie(@PathVariable("movieId") Long movieId, Model model){
+		Optional<Movie> movie = movieRepository.findById(movieId);
+		if(movie != null){
+			movieRepository.deleteById(movieId);
+			model.addAttribute("operation", "Film Eliminato con successo");
+		}
+			
+		return manageMovies(model);
+	}
 	
 	
 	@GetMapping(value="/admin/addDirector/{id}")
@@ -151,8 +164,11 @@ public class MovieController {
 		
 		this.movieValidator.validate(movie, bindingResult);
 		if (!bindingResult.hasErrors()) {
-			Image image = service.uploadImageToFileSystem(file);
-			movie.setPrimaryImage(image);
+			if(!file.isEmpty()){
+				Image image = service.uploadImageToFileSystem(file);
+				movie.setPrimaryImage(image);
+			}
+			
 			
 			Arrays.stream(files).forEach(multipartFile -> {
 				try {
@@ -232,7 +248,8 @@ public class MovieController {
 	public String getMovies(Model model) {
 		model.addAttribute("isAdmin",isAdmin());
 		Pageable pageable = PageRequest.of(0, 6);
-		if(SecurityContextHolder.getContext().getAuthentication().getName() != "anonymousUser") {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(!(authentication instanceof AnonymousAuthenticationToken)) {
 			UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
 			model.addAttribute("user", credentials.getUser());

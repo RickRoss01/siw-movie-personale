@@ -44,7 +44,6 @@ public class Movie {
 	@ManyToMany
 	private Set<Artist> actors;
 	
-	
 	@OneToOne
 	@JoinColumn(name="primary_image_id")
 	private Image primaryImage;

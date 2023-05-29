@@ -68,18 +68,39 @@
   </nav>
 
   <div class="container my-5">
-	<div class="container" id="siwimage"><img class="img-fluid" src="/images/logo-siw.png" style=""/></div>
-	
+	<div class="container" id="siwimage"><img class="img-fluid" src="/images/logo-siw.png" />
+	<h2 class="text-success" th:if="${operation}" th:text="${operation}"></h2></div>
 	<div th:if="${!movies.isEmpty()}" class="container my-3">
 		<div class="row">
 			<div th:each="movie, movieStat : ${movies}" class="col-md-4 col-sm-6">
 			  <div class="card mb-3" style="max-width: 80%;">
-				<img th:src="${'\'+movie.primaryImage.imagePath}" class="card-img-top " id="moviecard" alt="Movie Poster">
+				<img th:src="${'\'+movie.primaryImage.imagePath}" th:if="${movie.primaryImage}" class="card-img-top " id="moviecard" alt="Movie Poster">
 				<div class="card-body">
 				  <h5 th:text="${movie.title}" class="card-title"></h5>
 				  <p th:text="${movie.year}" class="card-text"></p>
 				  <p th:text=" ${'Valutazione: '+movie.rating}" class="card-text">Valutazione: </p>
 				  <a th:href="@{'/admin/formUpdateMovie' + '/' + ${movie.id}}" class="btn btn-primary">Aggiorna</a>
+				  <button type="button" class="btn btn-danger" data-bs-toggle="modal" th:data-bs-target="'#staticBackdrop-' + ${movie.id}">
+					Cancella
+				  </button>
+				</div>
+			  </div>
+			  <div class="modal fade " th:id="'staticBackdrop-' + ${movie.id}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+				<div class="modal-dialog">
+				  <div class="modal-content">
+					<div class="modal-header">
+					  <h1 class="modal-title fs-5" id="staticBackdropLabel">Conferma Operazione</h1>
+					  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+					  Sei sicuro di voler cancellare definitivamente questo film?
+					</div>
+					<div class="modal-footer">
+					 
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+					  <a th:href="@{'/admin/deleteMovie' + '/' + ${movie.id}}"><button type="button" class="btn btn-danger">Conferma</button></a>
+					</div>
+				  </div>
 				</div>
 			  </div>
 			</div>
@@ -110,6 +131,7 @@
 		  </li>
 		</ul>
 	  </nav>
+	  
 </body>
 
 </html>

@@ -249,3 +249,7 @@ p.flex-item {
   .rating{
     background-color: transparent;
   }
+
+  .clickable-link{
+    padding-left: .5em;
+  }

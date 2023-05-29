@@ -31,6 +31,9 @@ public class Artist {
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate dateOfBirth;
 
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	private LocalDate dateOfDeath;
+
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="image_id")
 	private Image image;
@@ -119,6 +122,14 @@ public class Artist {
 
 	public void setDirectorOf(List<Movie> directedMovies) {
 		this.directedMovies = directedMovies;
+	}
+
+	public LocalDate getDateOfDeath() {
+		return dateOfDeath;
+	}
+
+	public void setDateOfDeath(LocalDate dateOfDeath) {
+		this.dateOfDeath = dateOfDeath;
 	}
 
 	@Override

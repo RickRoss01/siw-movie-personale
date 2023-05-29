@@ -77,7 +77,7 @@
 		<div class="row">
 			<div th:each="movie, movieStat : ${movies}" class="col-md-4 col-sm-6">
 			  <div class="card mb-3" style="max-width: 80%;">
-				<img th:src="${'\'+movie.primaryImage.imagePath}" class="card-img-top " id="moviecard" alt="Movie Poster">
+				<img th:src="${'\'+movie.primaryImage.imagePath}" th:if="${movie.primaryImage}" class="card-img-top " id="moviecard" alt="Movie Poster">
 				<div class="card-body">
 				  <h5 th:text="${movie.title}" class="card-title"></h5>
 				  <p th:text="${movie.year}" class="card-text"></p>
