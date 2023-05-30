@@ -87,7 +87,7 @@
 		<div class="container my-5" id="movie">
 			<div class="flex-container-orizzontale">
 				<div class="flex-container-verticale">
-					<h1 style="padding-top: 5%;">Nuovo Film</h1>
+					<h1 style="padding-top: 5%;">Nuovo Attore</h1>
 					
 				</div>
 
@@ -108,20 +108,45 @@
 							A simple danger alert with <a href="#" class="alert-link">an example link</a>. Give it a click if you like.
 						  </div>
 					</div>
-					<div class="col-md-4">
+					<div class="col-md-6">
 						<label for="name" class="form-label">Nome</label>
 						<input th:if="${!#fields.hasErrors('name')}" type="text" class="form-control" id="name" th:field="*{name}" placeholder="">
 						<input th:if="${#fields.hasErrors('name')}" type="text" class="form-control is-invalid" id="name" th:field="*{name}" placeholder="">
 						<div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
 					</div>
-					<div class="col-md-4">
+					<div class="col-md-6">
 						<label for="surname" class="form-label">Cognome</label>
-						<input th:if="${!#fields.hasErrors('surname')}" class="form-control" rows="3" th:field="*{surname}"></input>
+						<input th:if="${!#fields.hasErrors('surname')}" class="form-control" th:field="*{surname}"></input>
 						<input th:if="${#fields.hasErrors('surname')}" class="form-control is-invalid" rows="3" th:field="*{surname}"></input>
 						<div class="invalid-feedback" th:if="${#fields.hasErrors('surname')}" th:errors="*{surname}"></div>
 						
 						
 					</div>
+
+					<div class="col-md-6">
+						<label for="dateOfBirth" class="form-label">Data di nascita</label>
+						<input type="date" th:if="${!#fields.hasErrors('dateOfBirth')}" class="form-control"  th:field="*{dateOfBirth}"></input>
+						<input type="date" th:if="${#fields.hasErrors('dateOfBirth')}" class="form-control is-invalid" rows="3" th:field="*{dateOfBirth}"></input>
+						<div class="invalid-feedback" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>
+					</div>
+					<div class="col-md-6">
+						<label for="dateOfDeath" class="form-label">Data di morte</label>
+						<input type="date" th:if="${!#fields.hasErrors('dateOfDeath')}" class="form-control"  th:field="*{dateOfDeath}"></input>
+						<input type="date" th:if="${#fields.hasErrors('dateOfDeath')}" class="form-control is-invalid" rows="3" th:field="*{dateOfDeath}"></input>
+						<div class="invalid-feedback" th:if="${#fields.hasErrors('dateOfDeath')}" th:errors="*{dateOfDeath}"></div>
+					</div>
+					<div class="">
+						<label for="biography" class="form-label">Biografia</label>
+						<textarea th:if="${!#fields.hasErrors('biography')}" class="form-control" rows="3" th:field="*{biography}"></textarea>
+						<textarea th:if="${#fields.hasErrors('biography')}" class="form-control is-invalid" rows="3" th:field="*{biography}"></textarea>
+						<div class="invalid-feedback" th:if="${#fields.hasErrors('biography')}" th:errors="*{biography}"></div>
+					</div>
+					<div class="mb-3">
+						<label for="formFile" class="form-label">Foto Artista</label>
+						<input th:if="${!#fields.hasErrors('image')}" class="form-control" type="file" id="artistimage" name="artistimage" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+						<input th:if="${#fields.hasErrors('image')}" class="form-control is-invalid" type="file" id="artistimage" name="artistimage" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+						<div class="invalid-feedback" th:if="${#fields.hasErrors('image')}" th:errors="*{image}"></div>
+					  </div>
 					
 					  
 					  

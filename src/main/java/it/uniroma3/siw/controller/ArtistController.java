@@ -1,19 +1,31 @@
 package it.uniroma3.siw.controller;
 
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import it.uniroma3.siw.controller.validator.ArtistValidator;
 import it.uniroma3.siw.model.Artist;
+import it.uniroma3.siw.model.Image;
+import it.uniroma3.siw.model.Movie;
 import it.uniroma3.siw.repository.ArtistRepository;
 import it.uniroma3.siw.service.ArtistService;
+import it.uniroma3.siw.service.StorageService;
 
 @Controller
 public class ArtistController {
@@ -22,10 +34,16 @@ public class ArtistController {
 	private ArtistRepository artistRepository;
 
 	@Autowired 
+	private ArtistValidator artistValidator;
+
+	@Autowired 
 	private MovieController movieController;
 
 	@Autowired
 	private ArtistService artistService;
+
+	@Autowired
+	private StorageService service;
 
 	@GetMapping(value="/admin/formNewArtist")
 	public String formNewArtist(Model model) {
@@ -39,13 +57,19 @@ public class ArtistController {
 	}
 	
 	@PostMapping("/admin/newArtist")
-	public String newArtist(@ModelAttribute("artist") Artist artist, Model model) {
-		if (!artistRepository.existsByNameAndSurname(artist.getName(), artist.getSurname())) {
-			this.artistRepository.save(artist); 
+	public String newArtist(@Valid @ModelAttribute("artist") Artist artist,BindingResult bindingResult,@RequestParam("artistimage")MultipartFile file,Model model) throws IOException, InterruptedException {
+		this.artistValidator.validate(artist, bindingResult);
+		if (!bindingResult.hasErrors()) {
+			if(!file.isEmpty()){
+				Image image = service.uploadImageToFileSystem(file);
+				artist.setImage(image);
+			}
+			this.artistRepository.save(artist);
 			model.addAttribute("artist", artist);
+			 TimeUnit.SECONDS.sleep(1);
 			return "artist.html";
-		} else {
-			model.addAttribute("messaggioErrore", "Questo artista esiste già");
+		}else {
+			
 			return "admin/formNewArtist.html"; 
 		}
 	}

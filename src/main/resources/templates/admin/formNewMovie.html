@@ -134,7 +134,7 @@
 						<label for="formFile" class="form-label">Immagine locandina</label>
 						<input th:if="${!#fields.hasErrors('primaryImage')}" class="form-control" type="file" id="image" name="image" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
 						<input th:if="${#fields.hasErrors('primaryImage')}" class="form-control is-invalid" type="file" id="image" name="image" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
-						<div class="invalid-feedback" th:if="${#fields.hasErrors('year')}" th:errors="*{year}"></div>
+						<div class="invalid-feedback" th:if="${#fields.hasErrors('primaryImage')}" th:errors="*{primaryImage}"></div>
 					  </div>
 					  <div class="mb-3">
 						<label for="formFile" class="form-label">Immagini film</label>

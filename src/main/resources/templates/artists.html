@@ -79,7 +79,7 @@
 		<div class="card mb-3 text-bg-secondary border-primary" th:each="artist, artistStat : ${artists}" style="max-width: 540px;">
 			<div class="row g-0" >
 			  <div class="col-md-4" id="img-container">
-				<img id="artist-card" th:src="${'\'+artist.image.imagePath}" class="img-fluid rounded-circle"  alt="...">
+				<img th:if="${artist.image}" id="artist-card" th:src="${'\'+artist.image.imagePath}" class="img-fluid rounded-circle"  alt="...">
 			  </div>
 			  
 			  <div class="col-md-8">

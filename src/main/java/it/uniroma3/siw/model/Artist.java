@@ -16,6 +16,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -25,9 +27,12 @@ public class Artist {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+	@NotBlank
 	private String name;
+	@NotBlank
 	private String surname;
 	
+	@NotNull(message = "La data di nascita non può essere vuota")
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	private LocalDate dateOfBirth;
 
