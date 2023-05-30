@@ -74,6 +74,7 @@
 	<div class="container my-5" id="movie">
 	  <h1 th:text="${artist.name}">Christopher</h1>
 	  <h2 th:text="${artist.surname}">Nolan</h2>
+	  
 	  <div class="d-flex p-2">
 		<img th:if="${artist.image}" class="img-fluid flex-item" id="movie-image" th:src="${'/'+artist.image.imagePath} "style="margin-left:0px;">
 	  <div style="padding-left: 2%;">
