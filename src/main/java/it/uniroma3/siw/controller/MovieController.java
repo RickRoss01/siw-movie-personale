@@ -159,6 +159,34 @@ public class MovieController {
 		return "admin/directorsToAdd.html";
 	}
 
+
+
+	@PostMapping("/updateTitle")
+	public String updateMovieTitle(@RequestParam("movieId") Long movieId, @RequestParam("newTitle") String newTitle, Model model) {
+    Optional<Movie> movie = movieRepository.findById(movieId);
+    if (movie == null) {
+        return "Errore, film non trovato";
+    }
+    movie.get().setTitle(newTitle);
+    movieRepository.save(movie.get());
+    
+    return formUpdateMovie(movieId, model);
+}
+
+@PostMapping("/updateYear")
+	public String updateMovieYear(@RequestParam("movieId") Long movieId, @RequestParam("newYear") Integer newYear, Model model) {
+    Optional<Movie> movie = movieRepository.findById(movieId);
+    if (movie == null) {
+        return "Errore, film non trovato";
+    }
+    movie.get().setYear(newYear);
+    movieRepository.save(movie.get());
+    
+    return formUpdateMovie(movieId, model);
+}
+
+
+
 	@PostMapping("/admin/newMovie")
 	public String newMovie(@Valid @ModelAttribute("movie") Movie movie,BindingResult bindingResult,@RequestParam("image")MultipartFile file,@RequestParam("movieimages")MultipartFile[] files,Model model) throws IOException, InterruptedException {
 		
