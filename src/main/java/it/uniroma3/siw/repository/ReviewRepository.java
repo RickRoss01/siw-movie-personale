@@ -14,7 +14,7 @@ public interface ReviewRepository extends CrudRepository<Review, Long> {
 
 	public boolean existsByUserAndMovie(int user, int movie);	
 
-	public List<Movie> findByMovie(Long id);
+	public List<Review> findByMovieId(Long movieId);
 
 
 	public boolean existsByMovieIdAndUserId(Long movieId, Long userId);

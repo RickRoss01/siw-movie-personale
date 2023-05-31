@@ -224,7 +224,7 @@ p.flex-item {
     margin-block-end: 1rem;
   }
   
-  /* NO JS */
+  
   .rating--nojs::-moz-range-track {
     background: var(--fillbg);
   }

@@ -33,6 +33,9 @@ public class ReviewController {
 	@Autowired
 	private ReviewValidator reviewValidator;
 
+	@Autowired
+	private MovieController movieController;
+
 
 	@Autowired
 	private CredentialsService credentialsService;
@@ -40,10 +43,21 @@ public class ReviewController {
 	@GetMapping("/movie/{id}/reviews")
 	public String getMovieReviews(@PathVariable("id") Long id, Model model) {
 		model.addAttribute("isAdmin",isAdmin());
-		model.addAttribute("reviews", reviewRepository.findByMovie(id));
-		model.addAttribute("movie", this.movieRepository.findById(id).get());
+		Movie movie= this.movieRepository.findById(id).get();
+		model.addAttribute("reviews", reviewRepository.findByMovieId(id));
+		model.addAttribute("movie", movie);
 
-		return "movieReviews.html";
+		return "Reviews.html";
+	}
+
+	@GetMapping("/admin/deleteReview/{reviewId}/{movieId}")
+	public String manageArtists(@PathVariable("reviewId") Long reviewId , @PathVariable("movieId") Long movieId ,Model model) {
+		if(reviewRepository.existsById(reviewId)){
+			this.reviewRepository.deleteById(reviewId);
+		}
+		model.addAttribute("operation", "Recensione Cancellata");
+		updateMovieRaing(this.movieRepository.findById(movieId).get());
+		return getMovieReviews(movieId, model);
 	}
 
 	@GetMapping("/authenticated/writeReview/{id}")
@@ -69,10 +83,7 @@ public String writeReview(@PathVariable("id") Long id, Model model) {
 			model.addAttribute("movie",movie);
 			this.reviewRepository.save(newreview); 
 			updateMovieRaing(newreview.getMovie());
-			model.addAttribute("review",reviewRepository.findByMovieIdAndUserId(movie.getId(),getCurrentUser().getId()));
-			Pageable pageable = PageRequest.of(0, 3);
-			model.addAttribute("reviews", this.reviewRepository.findTop3ReviewsOrderByCreatedOnDesc(movie,pageable));
-			return "movie.html";
+			return this.movieController.getMovie(movie.getId(), model);
 		} else {
 			model.addAttribute("movie", newreview.getMovie());
 			model.addAttribute("user", getCurrentUser());
@@ -84,6 +95,7 @@ public String writeReview(@PathVariable("id") Long id, Model model) {
 	private void updateMovieRaing(Movie movie) {
 		Float movieRating = reviewRepository.getAvgRating(movie);
 		movie.setRating(movieRating);
+		this.movieRepository.save(movie);
 	}
 
 	private User getCurrentUser() {
