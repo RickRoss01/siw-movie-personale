@@ -72,15 +72,35 @@
 	<div th:if="${artist.image}" id="blurred" th:style="'background-image: url(/'+${artist.image.imagePath}+');'" ></div>
 	<div id="black-blurred"></div>
 	<div class="container my-5" id="movie">
-	  <h1 th:text="${artist.name}">Christopher</h1>
-	  <h2 th:text="${artist.surname}">Nolan</h2>
-	  <h3 th:text="'Data di nascita: '+${artist.dateOfBirth}">05/12/1980</h3>
-	  <h3 th:if="${artist.dateOfDeath}" th:text="'Data di morte: '+${artist.dateOfDeath}">01/05/1999</h3>
+		<h2 class="text-success" th:if="${operation}" th:text="${operation}" style="text-align: center;"></h2>
+		<div class="d-flex align-items-end">
+			<h1 th:text="${artist.name+' '+artist.surname}">Christopher</h1>
+			<a data-bs-toggle="modal" data-bs-target="#nameSurnameModal" class="clickable-link">
+				<h5>Modifica</h5>
+			</a>
+		</div>
+		<div class="d-flex align-items-end">
+			<h3 th:text="'Data di nascita: '+${artist.dateOfBirth}">05/12/1970</h3>
+			<a data-bs-toggle="modal" data-bs-target="#dateOfBirthModal" class="clickable-link">
+				<h5>Modifica</h5>
+			</a>
+		</div>
+		<div class="d-flex align-items-end">
+			<h3 th:if="${artist.dateOfDeath}" th:text="'Data di morte: '+${artist.dateOfDeath}">05/12/1970</h3>
+			<h3 th:unless="${artist.dateOfDeath}" th:text="'Data di morte: '">05/12/1970</h3>
+			<a data-bs-toggle="modal" data-bs-target="#dateOfDeathModal" class="clickable-link">
+				<h5>Modifica</h5>
+			</a>
+		</div>
+		
 	  <div class="d-flex p-2">
 		<img th:if="${artist.image}" class="img-fluid flex-item" id="movie-image" th:src="${'/'+artist.image.imagePath} "style="margin-left:0px; margin-right: 0px;">
 	  <div style="padding-left: 2%;">
 		<h1>Bio</h1>
 		<p class="lead " th:text="${artist.biography}"></p>
+		<a data-bs-toggle="modal" data-bs-target="#bioModal" class="clickable-link">
+			<h5>Modifica</h5>
+		</a>
 	  </div>
 		
 		  
@@ -151,6 +171,113 @@
 </div>
 </div>
 </div>
-    
+<div class="modal fade" id="nameSurnameModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h1 class="modal-title fs-5" id="exampleModalLabel">Modifica Titolo</h1>
+		  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
+		<div class="modal-body">
+		  <form th:action="@{/updateArtistNameAndSurname}" method="POST">
+			<div class="mb-3">
+			  <label for="recipient-name" class="col-form-label">Nuovo nome</label>
+			  <input type="text" class="form-control" id="recipient-name" name="newName">
+			</div>
+			<div class="mb-3">
+				<label for="recipient-name" class="col-form-label">Nuovo Cognome</label>
+				<input type="text" class="form-control" id="recipient-name" name="newSurname">
+			  </div>
+			<div class="mb-3">
+				<input type="text" class="form-control visually-hidden" id="recipient-name" th:value="${artist.id}" name="artistId">
+			  </div>
+			<button type="submit" class="btn btn-primary">Aggiorna</button>
+		  </form>
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+		  
+		</div>
+	  </div>
+	</div>
+  </div>
+  <div class="modal fade" id="dateOfBirthModal" tabindex="-1"  aria-hidden="true">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h1 class="modal-title fs-5" id="exampleModalLabel">Modifica Data di nascita</h1>
+		  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
+		<div class="modal-body">
+		  <form th:action="@{/updateArtistDateOfBirth}" method="POST">
+			<div class="mb-3">
+			  <label for="recipient-name" class="col-form-label">Nuova Data di Nascita</label>
+			  <input required type="date" class="form-control" id="recipient-name" name="newDateOfBirth">
+			</div>
+			<div class="mb-3">
+				<input type="text" class="form-control visually-hidden" id="recipient-name" th:value="${artist.id}" name="artistId">
+			  </div>
+			<button type="submit" class="btn btn-primary">Aggiorna</button>
+		  </form>
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+		  
+		</div>
+	  </div>
+	</div>
+  </div>
+  <div class="modal fade" id="dateOfDeathModal" tabindex="-1"  aria-hidden="true">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h1 class="modal-title fs-5" id="exampleModalLabel">Modifica Data di morte</h1>
+		  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
+		<div class="modal-body">
+		  <form th:action="@{/updateArtistDateOfDeath}" method="POST">
+			<div class="mb-3">
+			  <label for="recipient-name" class="col-form-label">Nuova Data di Morte</label>
+			  <input type="date" class="form-control" id="recipient-name" name="newDateOfDeath">
+			</div>
+			<div class="mb-3">
+				<input type="text" class="form-control visually-hidden" id="recipient-name" th:value="${artist.id}" name="artistId">
+			  </div>
+			<button type="submit" class="btn btn-primary">Aggiorna</button>
+		  </form>
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+		  
+		</div>
+	  </div>
+	</div>
+  </div>
+  <div class="modal modal-lg fade" id="bioModal" tabindex="-1"  aria-hidden="true">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h1 class="modal-title fs-5" id="exampleModalLabel">Modifica Biografia</h1>
+		  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
+		<div class="modal-body">
+		  <form th:action="@{/updateArtistBio}" method="POST">
+			<div class="mb-3">
+			  <label for="recipient-name" class="col-form-label">Biografia</label>
+			  <textarea required type="text" class="form-control" id="recipient-name" th:text ="${artist.biography}" rows="5" name="newBio"></textarea>
+			</div>
+			<div class="mb-3">
+				<input type="text" class="form-control visually-hidden" id="recipient-name" th:value="${artist.id}" name="artistId">
+			  </div>
+			<button type="submit" class="btn btn-primary">Aggiorna</button>
+		  </form>
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+		  
+		</div>
+	  </div>
+	</div>
+  </div>
   </body>
 </html>

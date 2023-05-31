@@ -55,7 +55,9 @@
 					<li class="nav-item">
 						<a class="nav-link" href="/artists">Artisti</a>
 					</li>
-					
+					<li class="nav-item" th:if="${isAdmin}">
+						<a class="nav-link" href="/success">Pannello di controllo </a>
+					</li>
 				</ul>
 
 				<form class="d-flex flex-grow-1" th:action="@{/searchMovies}" method="post"

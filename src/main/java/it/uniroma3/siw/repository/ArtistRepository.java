@@ -4,6 +4,7 @@ package it.uniroma3.siw.repository;
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -24,14 +25,18 @@ public interface ArtistRepository extends CrudRepository<Artist, Long> {
 	public Iterable<Artist> findActorsNotInMovie(@Param("movieId") Long id);
 
 	@Query("SELECT m FROM Movie m JOIN FETCH m.director d WHERE d.id = :directorId ORDER BY m.rating DESC")
-	List<Movie> findTopDirectorMoviesOrderByRatingDesc(Pageable pageable, @Param("directorId") Long id);
+	public List<Movie> findTopDirectorMoviesOrderByRatingDesc(Pageable pageable, @Param("directorId") Long id);
 
 	@Query("SELECT m FROM Movie m JOIN m.actors a WHERE a.id = :actorId ORDER BY m.rating DESC")
-List<Movie> findTopActorMoviesOrderByRatingDesc(Pageable pageable, @Param("actorId") Long id);
+	public List<Movie> findTopActorMoviesOrderByRatingDesc(Pageable pageable, @Param("actorId") Long id);
 
 	@Query("SELECT COUNT(a) FROM Artist a")
-	Long countTotalArtists();
+	public Long countTotalArtists();
 
 	@Query("SELECT a FROM Artist a")
-	List<Artist> findAllArtists(Pageable pageable);
+	public List<Artist> findAllArtists(Pageable pageable);
+
+	@Modifying
+	@Query(value = "delete from movie_actors where actors_id = :artistId", nativeQuery=true)
+	public void deleteStarredAndDirectedMovies(@Param("artistId") Long id);
 }

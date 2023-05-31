@@ -1,6 +1,8 @@
 package it.uniroma3.siw.controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
@@ -48,6 +50,7 @@ public class ArtistController {
 	@GetMapping(value="/admin/formNewArtist")
 	public String formNewArtist(Model model) {
 		model.addAttribute("artist", new Artist());
+		model.addAttribute("isAdmin",isAdmin());
 		return "admin/formNewArtist.html";
 	}
 	
@@ -67,11 +70,56 @@ public class ArtistController {
 			this.artistRepository.save(artist);
 			model.addAttribute("artist", artist);
 			 TimeUnit.SECONDS.sleep(1);
-			return "artist.html";
+			return getArtist(artist.getId(), model);
 		}else {
 			
 			return "admin/formNewArtist.html"; 
 		}
+	}
+
+	@PostMapping("/updateArtistNameAndSurname")
+	public String updateArtistNameAndSurname(@RequestParam("newName") String newName, @RequestParam("newSurname") String newSurname,@RequestParam("artistId") Long artistId, Model model){
+		Optional<Artist> artist = this.artistRepository.findById(artistId);
+		if(artist == null){
+			model.addAttribute("operation", "Artista non trovato");
+			return manageArtists(model);
+		}
+		this.artistService.updateNameAndSurname(newName,newSurname,artist.get());
+		model.addAttribute("operation", "Operazione effettuata");
+		return formUpdateArtist(artistId, model);
+	}
+
+	@PostMapping("/updateArtistDateOfBirth")
+	public String updateArtistDateOfBirth(@RequestParam("newDateOfBirth") String newDateOfBirth, @RequestParam("artistId") Long artistId, Model model){
+		Optional<Artist> artist = this.artistRepository.findById(artistId);
+		if(artist == null){
+			model.addAttribute("operation", "Artista non trovato");
+			return manageArtists(model);
+		}
+		model.addAttribute("operation", this.artistService.updateDateOfBirth(newDateOfBirth,artist.get()));
+		return formUpdateArtist(artistId, model);
+	}
+
+	@PostMapping("/updateArtistDateOfDeath")
+	public String updateArtistDateOfDeath(@RequestParam("newDateOfDeath") String newDateOfDeath, @RequestParam("artistId") Long artistId, Model model){
+		Optional<Artist> artist = this.artistRepository.findById(artistId);
+		if(artist == null){
+			model.addAttribute("operation", "Artista non trovato");
+			return manageArtists(model);
+		}
+		model.addAttribute("operation", this.artistService.updateDateOfDeath(newDateOfDeath,artist.get()));
+		return formUpdateArtist(artistId, model);
+	}
+
+	@PostMapping("/updateArtistBio")
+	public String updateArtistBio(@RequestParam("newBio") String newBio, @RequestParam("artistId") Long artistId, Model model){
+		Optional<Artist> artist = this.artistRepository.findById(artistId);
+		if(artist == null){
+			model.addAttribute("operation", "Artista non trovato");
+			return manageArtists(model);
+		}
+		model.addAttribute("operation", this.artistService.updateBio(newBio,artist.get()));
+		return formUpdateArtist(artistId, model);
 	}
 
 	@GetMapping("/artist/{id}")
@@ -144,6 +192,17 @@ public class ArtistController {
 		model.addAttribute("isAdmin",isAdmin());
 		model.addAttribute("artists", this.artistRepository.findAllArtists(pageable));
 		return "admin/manageArtists.html";
+	}
+
+	@GetMapping(value="/admin/formUpdateArtist/{id}")
+	public String formUpdateArtist(@PathVariable("id") Long id, Model model) {
+		model.addAttribute("isAdmin",isAdmin());
+		Pageable pageable = PageRequest.of(0, 3);
+		model.addAttribute("artist", artistRepository.findById(id).get());
+		model.addAttribute("topDirectorMovies", this.artistRepository.findTopDirectorMoviesOrderByRatingDesc(pageable,id));
+		model.addAttribute("topActorMovies", this.artistRepository.findTopActorMoviesOrderByRatingDesc(pageable,id));
+
+		return "admin/formUpdateArtist.html";
 	}
 	
 

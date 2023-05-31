@@ -81,6 +81,7 @@ public class MovieController {
 	public String formNewMovie(Model model) {
 		model.addAttribute("movie", new Movie());
 		model.addAttribute("directors",artistRepository.findAll());
+		model.addAttribute("isAdmin", isAdmin());
 		return "admin/formNewMovie.html";
 	}
 
@@ -107,7 +108,7 @@ public class MovieController {
 		Pageable pageable = PageRequest.of(0, 6);
 		int pages = (int) Math.ceil((double)this.movieRepository.countTotalMovies()/6);//Stabilisci quante pagine devo far vedere
 
-
+		model.addAttribute("isAdmin",isAdmin());
 		model.addAttribute("page", 1);
 		model.addAttribute("pages", pages);
 		model.addAttribute("movies", this.movieRepository.findAllMovies(pageable));
@@ -167,8 +168,11 @@ public class MovieController {
     if (movie == null) {
         return "Errore, film non trovato";
     }
-    movie.get().setTitle(newTitle);
-    movieRepository.save(movie.get());
+	if(!newTitle.isBlank()){
+		movie.get().setTitle(newTitle);
+    	movieRepository.save(movie.get());
+	}
+    
     
     return formUpdateMovie(movieId, model);
 }
@@ -179,8 +183,11 @@ public class MovieController {
     if (movie == null) {
         return "Errore, film non trovato";
     }
-    movie.get().setYear(newYear);
-    movieRepository.save(movie.get());
+	if(newYear != null){
+		movie.get().setYear(newYear);
+    	movieRepository.save(movie.get());
+	}
+   	
     
     return formUpdateMovie(movieId, model);
 }
@@ -189,7 +196,6 @@ public class MovieController {
 
 	@PostMapping("/admin/newMovie")
 	public String newMovie(@Valid @ModelAttribute("movie") Movie movie,BindingResult bindingResult,@RequestParam("image")MultipartFile file,@RequestParam("movieimages")MultipartFile[] files,Model model) throws IOException, InterruptedException {
-		
 		this.movieValidator.validate(movie, bindingResult);
 		if (!bindingResult.hasErrors()) {
 			if(!file.isEmpty()){

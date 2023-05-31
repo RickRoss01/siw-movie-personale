@@ -254,3 +254,7 @@ p.flex-item {
     padding-left: .5em;
     
   }
+
+  .card{
+    justify-content: center;
+  }
