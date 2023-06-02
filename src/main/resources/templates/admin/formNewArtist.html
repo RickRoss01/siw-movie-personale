@@ -68,7 +68,8 @@
 				</form>
 				<div th:if="${#request.userPrincipal}" style="margin-left: 10%;">
 					<span>Ciao, </span>
-					<span th:text="${#request.userPrincipal.principal.username}"> </span>
+					<span th:if="${#request.userPrincipal.principal instanceof T(org.springframework.security.oauth2.core.user.DefaultOAuth2User)}" th:text="${#request.userPrincipal.principal.attributes.name}"> </span>
+			<span th:unless="${#request.userPrincipal.principal instanceof T(org.springframework.security.oauth2.core.user.DefaultOAuth2User)}" th:text="${#request.userPrincipal.principal.username}"> </span>
 					<button class="btn btn-outline-success" type="submit"><a id="loginbutton"
 							href="/logout">Logout</a></button>
 				</div>

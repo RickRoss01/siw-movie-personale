@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -18,6 +19,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -254,11 +256,19 @@ public class MovieController {
 	private Review getLoggedUserMovieReview(Long id, Model model) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if(!(authentication instanceof AnonymousAuthenticationToken)) {
-			UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			User user = credentialsService.getCredentials(userDetails.getUsername()).getUser();
-			Long userid = user.getId();
+			if(authentication.getPrincipal() instanceof DefaultOAuth2User){
+				Map<String, Object> attributes = ((DefaultOAuth2User) authentication.getPrincipal()).getAttributes();
+				String username = (String) attributes.get("email");
+				Credentials credentials = credentialsService.getCredentials(username);
+				return reviewRepository.findByMovieIdAndUserId(id,credentials.getUser().getId());
+			}else{
+				UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+				User user = credentialsService.getCredentials(userDetails.getUsername()).getUser();
+				Long userid = user.getId();
 			
-			return reviewRepository.findByMovieIdAndUserId(id,userid);
+				return reviewRepository.findByMovieIdAndUserId(id,userid);
+			}
+			
 			
 		}
 		return null;

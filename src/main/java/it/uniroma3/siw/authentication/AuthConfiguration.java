@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -58,6 +59,12 @@ public class AuthConfiguration extends WebSecurityConfigurerAdapter {
 		.loginPage("/login")
 		// se il login ha successo, si viene rediretti al path /default
 		.defaultSuccessUrl("/success", true)
+		.and()
+            .oauth2Login()
+            .loginPage("/login")
+            .defaultSuccessUrl("/success")
+            .failureUrl("/login?error=true")
+            .permitAll()
 
 		// LOGOUT: qui definiamo il logout
 		.and()
