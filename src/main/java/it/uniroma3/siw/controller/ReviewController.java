@@ -1,5 +1,7 @@
 package it.uniroma3.siw.controller;
 
+import java.util.Map;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,11 +18,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import it.uniroma3.siw.controller.validator.ReviewValidator;
+import it.uniroma3.siw.model.Credentials;
 import it.uniroma3.siw.model.Movie;
 import it.uniroma3.siw.model.Review;
 import it.uniroma3.siw.model.User;
 import it.uniroma3.siw.repository.MovieRepository;
 import it.uniroma3.siw.repository.ReviewRepository;
+import it.uniroma3.siw.repository.UserRepository;
 import it.uniroma3.siw.service.CredentialsService;
 
 @Controller
@@ -35,6 +40,8 @@ public class ReviewController {
 
 	@Autowired
 	private MovieController movieController;
+
+
 
 
 	@Autowired
@@ -99,8 +106,18 @@ public String writeReview(@PathVariable("id") Long id, Model model) {
 	}
 
 	private User getCurrentUser() {
-		UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		return(credentialsService.getCredentials(userDetails.getUsername()).getUser());
+		if(SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof DefaultOAuth2User){
+			DefaultOAuth2User oauth2User = (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			Map<String, Object> attributes = oauth2User.getAttributes();
+    
+            String username = (String) attributes.get("email");
+			Credentials credentials = credentialsService.getCredentials(username);
+			return credentials.getUser();
+		}else{
+			UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			return(credentialsService.getCredentials(userDetails.getUsername()).getUser());
+		}
+		
 	}
 
 	public boolean isAdmin() {

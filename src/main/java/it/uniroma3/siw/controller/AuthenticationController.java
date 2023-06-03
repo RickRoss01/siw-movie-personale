@@ -1,6 +1,9 @@
 package it.uniroma3.siw.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.Valid;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -24,6 +28,9 @@ import it.uniroma3.siw.model.User;
 import it.uniroma3.siw.repository.UserRepository;
 import it.uniroma3.siw.service.CredentialsService;
 
+import static it.uniroma3.siw.model.Credentials.ADMIN_ROLE;
+import static it.uniroma3.siw.model.Credentials.DEFAULT_ROLE;
+
 @Controller
 public class AuthenticationController {
 	
@@ -35,6 +42,8 @@ public class AuthenticationController {
 
     @Autowired
 	private MovieController movieController;
+
+
 	
 	@GetMapping(value = "/register") 
 	public String showRegisterForm (Model model) {
@@ -60,6 +69,8 @@ public class AuthenticationController {
             //String username = oauth2User.getAuthorities().stream();
             
             Map<String, Object> attributes = oauth2User.getAttributes();
+            
+	        
     
             // Ottenere il valore della stringa "name" dalla mappa di attributi
             String username = (String) attributes.get("email");
@@ -83,12 +94,29 @@ public class AuthenticationController {
                 // Salva le credenziali nel tuo database
                 userRepository.save(user);
                 credentialsService.saveCredentials(credentials);
-                Authentication newAuthentication = new UsernamePasswordAuthenticationToken(principal, credentials, oauth2User.getAuthorities());
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority(DEFAULT_ROLE);
+                List<SimpleGrantedAuthority> updatedAuthorities = new ArrayList<SimpleGrantedAuthority>();
+                updatedAuthorities.add(authority);
+                
+                Authentication newAuthentication = new UsernamePasswordAuthenticationToken(principal, credentials, updatedAuthorities);
+                
                 SecurityContextHolder.getContext().setAuthentication(newAuthentication);
-                SecurityContextHolder.getContext().getAuthentication();
+                SecurityContextHolder.getContext().getAuthentication().getAuthorities();
             }else{
-                Authentication newAuthentication = new UsernamePasswordAuthenticationToken(principal, credentials, oauth2User.getAuthorities());
+                List<SimpleGrantedAuthority> updatedAuthorities = new ArrayList<SimpleGrantedAuthority>();
+                if(credentialsService.getCredentials(username).getRole().equals(DEFAULT_ROLE)){
+                    SimpleGrantedAuthority authority = new SimpleGrantedAuthority(DEFAULT_ROLE);
+                    updatedAuthorities.add(authority);
+                }else if (credentialsService.getCredentials(username).getRole().equals(ADMIN_ROLE)){
+                    SimpleGrantedAuthority authority = new SimpleGrantedAuthority(ADMIN_ROLE);
+                    updatedAuthorities.add(authority);
+                }
+                
+                Authentication newAuthentication = new UsernamePasswordAuthenticationToken(principal, credentials, updatedAuthorities);
+                Collection d = (Collection<Object>) newAuthentication.getAuthorities();
                 SecurityContextHolder.getContext().setAuthentication(newAuthentication);
+                if (credentials.getRole().equals(Credentials.ADMIN_ROLE)) 
+                    return "admin/indexAdmin.html";
             }
         
             

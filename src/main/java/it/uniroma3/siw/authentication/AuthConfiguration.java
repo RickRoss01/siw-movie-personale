@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.sql.DataSource;
@@ -91,6 +92,8 @@ public class AuthConfiguration extends WebSecurityConfigurerAdapter {
 		//query per username e password. Il flag boolean flag specifica se l'utente user è abilitato o no (va sempre a true)
 		.usersByUsernameQuery("SELECT username, password, 1 as enabled FROM credentials WHERE username=?");
 	}
+
+	
 
 	/**
 	 * Questo metodo definisce il componente "passwordEncoder", 
