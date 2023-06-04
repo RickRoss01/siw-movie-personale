@@ -2,6 +2,7 @@ package it.uniroma3.siw.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Optional;
 
 import javax.management.Query;
@@ -72,5 +73,13 @@ public class ArtistService {
         
         artist.setBiography(newBio);
         return "Operazione completata";
+    }
+
+    public Iterable<Artist> findAllArtists(){
+        return this.artistRepository.findAll();
+    }
+
+    public List<Artist> findActorsNotInMovie(Long movieId) {
+        return (List<Artist>) this.artistRepository.findActorsNotInMovie(movieId);
     }
 }

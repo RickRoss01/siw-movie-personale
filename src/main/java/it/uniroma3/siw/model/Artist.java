@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -45,10 +46,10 @@ public class Artist {
 
 	private String biography;
 	
-	@ManyToMany(mappedBy="actors")
+	@ManyToMany(mappedBy="actors" , cascade = CascadeType.REMOVE)
 	private Set<Movie> starredMovies;
 	
-	@OneToMany(mappedBy="director")
+	@OneToMany(mappedBy="director" , cascade = CascadeType.REMOVE)
 	private List<Movie> directedMovies;
 	
 	public Artist(){

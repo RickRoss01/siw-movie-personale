@@ -71,7 +71,11 @@
 	  
 	
 	  
-
+		<a class="btn btn-primary" th:if="${isAdmin}" th:href="@{|/admin/formUpdateMovie/${movie.id}|}">Torna Al Film</a>
+		<a class="btn btn-primary" th:unless="${isAdmin}" th:href="@{|/movie/${movie.id}|}">Torna Al film</a>
+		<div class="container my-5" th:unledd="${!reviews.isEmpty()}"  >
+			<h2 class="text-center" >Nessuna Recensione</h2>
+		</div>
 	  <div class="container my-5" th:if="${!reviews.isEmpty()}"  >
 		<h2 class="text-success" th:if="${operation}" th:text="${operation}"></h2>
 		<h1 class="text-center" th:text="${movie.title+' - Recensioni'}"style="margin-bottom: 1em;">Le ultime recensioni</h1>

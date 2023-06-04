@@ -2,19 +2,12 @@ package it.uniroma3.siw.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Null;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,55 +16,43 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import it.uniroma3.siw.controller.validator.MovieValidator;
 import it.uniroma3.siw.model.Artist;
 import it.uniroma3.siw.model.Credentials;
-import it.uniroma3.siw.model.Image;
 import it.uniroma3.siw.model.Movie;
 import it.uniroma3.siw.model.Review;
 import it.uniroma3.siw.model.User;
-import it.uniroma3.siw.repository.ArtistRepository;
-import it.uniroma3.siw.repository.MovieRepository;
-import it.uniroma3.siw.repository.ReviewRepository;
+import it.uniroma3.siw.service.ArtistService;
 import it.uniroma3.siw.service.CredentialsService;
-import it.uniroma3.siw.service.StorageService;
+import it.uniroma3.siw.service.MovieService;
+import it.uniroma3.siw.service.ReviewService;
 
 @Controller
 public class MovieController {
-	@Autowired 
-	private MovieRepository movieRepository;
-
-	@Autowired 
-	private ReviewRepository reviewRepository;
-	
-	@Autowired 
-	private ArtistRepository artistRepository;
-
-	@Autowired 
-	private MovieValidator movieValidator;
 	
 	@Autowired 
 	private CredentialsService credentialsService;
+
 	@Autowired
-	private StorageService service;
+	private MovieService movieService;
+
+	@Autowired
+	private ReviewService reviewService;
+
+	@Autowired
+	private ArtistService artistService;
 	
 
 	@GetMapping(value = "/") 
 	public String index(Model model) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Pageable pageable = PageRequest.of(0, 3);
-		model.addAttribute("movies", this.movieRepository.findTop3MoviesOrderByRatingDesc(pageable));
-		if (authentication instanceof AnonymousAuthenticationToken) {
+		model.addAttribute("movies", this.movieService.getTopMovies());
+		if (this.movieService.getAuthentication() instanceof AnonymousAuthenticationToken) {
 	        return "index.html";
 		}
 		model.addAttribute("isAdmin",isAdmin());
@@ -82,7 +63,7 @@ public class MovieController {
 	@GetMapping(value="/admin/formNewMovie")
 	public String formNewMovie(Model model) {
 		model.addAttribute("movie", new Movie());
-		model.addAttribute("directors",artistRepository.findAll());
+		model.addAttribute("directors",artistService.findAllArtists());
 		model.addAttribute("isAdmin", isAdmin());
 		return "admin/formNewMovie.html";
 	}
@@ -90,10 +71,9 @@ public class MovieController {
 	@GetMapping(value="/admin/formUpdateMovie/{id}")
 	public String formUpdateMovie(@PathVariable("id") Long id, Model model) {
 		model.addAttribute("isAdmin",isAdmin());
-		Movie movie = this.movieRepository.findById(id).get();
-		model.addAttribute("movie", movieRepository.findById(id).get());
-		Pageable pageable = PageRequest.of(0, 3);
-		model.addAttribute("reviews", this.reviewRepository.findTop3ReviewsOrderByCreatedOnDesc(movie,pageable));
+		model.addAttribute("movie", this.movieService.findMovieById(id));
+		
+		model.addAttribute("reviews", this.reviewService.findTop3ReviewsByMovieId(id));
 
 		model.addAttribute("review",getLoggedUserMovieReview(id, model));
 
@@ -107,58 +87,47 @@ public class MovieController {
 	
 	@GetMapping(value="/admin/manageMovies")
 	public String manageMovies(Model model) {
-		Pageable pageable = PageRequest.of(0, 6);
-		int pages = (int) Math.ceil((double)this.movieRepository.countTotalMovies()/6);//Stabilisci quante pagine devo far vedere
 
 		model.addAttribute("isAdmin",isAdmin());
 		model.addAttribute("page", 1);
-		model.addAttribute("pages", pages);
-		model.addAttribute("movies", this.movieRepository.findAllMovies(pageable));
+		model.addAttribute("pages", this.movieService.getNumberOfPages());
+		model.addAttribute("movies", this.movieService.getMoviesByPage(1));
 		
 		return "admin/manageMovies.html";
 	}
 	@GetMapping("/admin/manageMovies/{pageNumber}")
-
 	public String getToModifyMoviesByPage(@PathVariable("pageNumber") Integer pageNumber,Model model) {
-		Pageable pageable = PageRequest.of((pageNumber-1), 6);
-		
-		int pages = (int) Math.ceil((double)this.movieRepository.countTotalMovies()/6);//Stabilisci quante pagine devo far vedere
-		
-		model.addAttribute("pages", pages);
+		model.addAttribute("pages", this.movieService.getNumberOfPages());
     	model.addAttribute("page", pageNumber);
-		model.addAttribute("movies", this.movieRepository.findAllMovies(pageable));
+		model.addAttribute("movies", this.movieService.getMoviesByPage(pageNumber));
+		model.addAttribute("isAdmin", this.isAdmin());
 		
 		return "admin/manageMovies.html";
 	}
 	
 	@GetMapping(value="/admin/setDirectorToMovie/{directorId}/{movieId}")
 	public String setDirectorToMovie(@PathVariable("directorId") Long directorId, @PathVariable("movieId") Long movieId, Model model) {
+		this.movieService.setDirectorToMovie(directorId,movieId);
 		
-		Artist director = this.artistRepository.findById(directorId).get();
-		Movie movie = this.movieRepository.findById(movieId).get();
-		movie.setDirector(director);
-		this.movieRepository.save(movie);
 		
-		model.addAttribute("movie", movie);
+		model.addAttribute("reviews", this.reviewService.findTop3ReviewsByMovieId(movieId));
+
+		model.addAttribute("review",getLoggedUserMovieReview(movieId, model));
+		model.addAttribute("movie", this.movieService.findMovieById(movieId));
 		return "admin/formUpdateMovie.html";
 	}
 
 	@GetMapping(value="/admin/deleteMovie/{movieId}")
 	public String deleteMovie(@PathVariable("movieId") Long movieId, Model model){
-		Optional<Movie> movie = movieRepository.findById(movieId);
-		if(movie != null){
-			movieRepository.deleteById(movieId);
-			model.addAttribute("operation", "Film Eliminato con successo");
-		}
-			
+		model.addAttribute("operation", this.movieService.deleteMovie(movieId));
 		return manageMovies(model);
 	}
 	
 	
 	@GetMapping(value="/admin/addDirector/{id}")
 	public String addDirector(@PathVariable("id") Long id, Model model) {
-		model.addAttribute("artists", artistRepository.findAll());
-		model.addAttribute("movie", movieRepository.findById(id).get());
+		model.addAttribute("artists", artistService.findAllArtists());
+		model.addAttribute("movie", this.movieService.findMovieById(id));
 		return "admin/directorsToAdd.html";
 	}
 
@@ -166,29 +135,14 @@ public class MovieController {
 
 	@PostMapping("/updateTitle")
 	public String updateMovieTitle(@RequestParam("movieId") Long movieId, @RequestParam("newTitle") String newTitle, Model model) {
-    Optional<Movie> movie = movieRepository.findById(movieId);
-    if (movie == null) {
-        return "Errore, film non trovato";
-    }
-	if(!newTitle.isBlank()){
-		movie.get().setTitle(newTitle);
-    	movieRepository.save(movie.get());
-	}
-    
-    
-    return formUpdateMovie(movieId, model);
+		model.addAttribute("operation", this.movieService.updateMovieTitle(movieId,newTitle));
+
+    	return formUpdateMovie(movieId, model);
 }
 
 @PostMapping("/updateYear")
 	public String updateMovieYear(@RequestParam("movieId") Long movieId, @RequestParam("newYear") Integer newYear, Model model) {
-    Optional<Movie> movie = movieRepository.findById(movieId);
-    if (movie == null) {
-        return "Errore, film non trovato";
-    }
-	if(newYear != null){
-		movie.get().setYear(newYear);
-    	movieRepository.save(movie.get());
-	}
+    model.addAttribute("operation", this.movieService.updateMovieYear(movieId, newYear));
    	
     
     return formUpdateMovie(movieId, model);
@@ -198,43 +152,18 @@ public class MovieController {
 
 	@PostMapping("/admin/newMovie")
 	public String newMovie(@Valid @ModelAttribute("movie") Movie movie,BindingResult bindingResult,@RequestParam("image")MultipartFile file,@RequestParam("movieimages")MultipartFile[] files,Model model) throws IOException, InterruptedException {
-		this.movieValidator.validate(movie, bindingResult);
-		if (!bindingResult.hasErrors()) {
-			if(!file.isEmpty()){
-				Image image = service.uploadImageToFileSystem(file);
-				movie.setPrimaryImage(image);
-			}
-			
-			
-			Arrays.stream(files).forEach(multipartFile -> {
-				try {
-					movie.addImage(service.uploadImageToFileSystem(multipartFile));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			});
-			
-			this.movieRepository.save(movie); 
-			
+		;
+		if(this.movieService.newMovie(movie, bindingResult, file,files)){
 			model.addAttribute("movie", movie);
 			model.addAttribute("images", movie.getImages());
 			model.addAttribute("isAdmin",isAdmin());
-			Pageable pageable = PageRequest.of(0, 3);
-			model.addAttribute("reviews", this.reviewRepository.findTop3ReviewsOrderByCreatedOnDesc(movie,pageable));
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			if(!(authentication instanceof AnonymousAuthenticationToken)) {
-				UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-				User user = credentialsService.getCredentials(userDetails.getUsername()).getUser();
-				Long userid = user.getId();
-			
-				model.addAttribute("review",reviewRepository.findByMovieIdAndUserId(movie.getId(),userid));
-			
-		}
+			model.addAttribute("reviews", this.reviewService.findTop3ReviewsByMovieId(movie.getId()));
 			TimeUnit.SECONDS.sleep(1);
-			return "movie.html";
-		} else {
-			model.addAttribute("directors",artistRepository.findAll());
+			return "admin/formUpdateMovie.html";
+		}
+			
+		else {
+			model.addAttribute("directors",artistService.findAllArtists());
 			return "admin/formNewMovie.html"; 
 		}
 	}
@@ -242,11 +171,10 @@ public class MovieController {
 	@GetMapping("/movie/{id}")
 	public String getMovie(@PathVariable("id") Long id, Model model) {
 		model.addAttribute("isAdmin",isAdmin());
-		Movie movie = this.movieRepository.findById(id).get();
+		Movie movie = this.movieService.findMovieById(id);
 		model.addAttribute("movie", movie);
 		model.addAttribute("images", movie.getImages());
-		Pageable pageable = PageRequest.of(0, 3);
-		model.addAttribute("reviews", this.reviewRepository.findTop3ReviewsOrderByCreatedOnDesc(movie,pageable));
+		model.addAttribute("reviews", this.reviewService.findTop3ReviewsByMovieId(id));
 
 		model.addAttribute("review",getLoggedUserMovieReview(id, model));
 
@@ -260,13 +188,13 @@ public class MovieController {
 				Map<String, Object> attributes = ((DefaultOAuth2User) authentication.getPrincipal()).getAttributes();
 				String username = (String) attributes.get("email");
 				Credentials credentials = credentialsService.getCredentials(username);
-				return reviewRepository.findByMovieIdAndUserId(id,credentials.getUser().getId());
+				return reviewService.findByMovieIdAndUserId(id,credentials.getUser().getId());
 			}else{
 				UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 				User user = credentialsService.getCredentials(userDetails.getUsername()).getUser();
 				Long userid = user.getId();
 			
-				return reviewRepository.findByMovieIdAndUserId(id,userid);
+				return reviewService.findByMovieIdAndUserId(id,userid);
 			}
 			
 			
@@ -278,26 +206,21 @@ public class MovieController {
 
 	public String getMoviesByPage(@PathVariable("pageNumber") Integer pageNumber,Model model) {
 		model.addAttribute("isAdmin",isAdmin());
-		Pageable pageable = PageRequest.of((pageNumber-1), 6);
 		
-		int pages = (int) Math.ceil((double)this.movieRepository.countTotalMovies()/6);//Stabilisci quante pagine devo far vedere
-		
-		model.addAttribute("pages", pages);
+		model.addAttribute("pages", this.movieService.getNumberOfPages());
     	model.addAttribute("page", pageNumber);
-		model.addAttribute("movies", this.movieRepository.findAllMovies(pageable));
+		model.addAttribute("movies", this.movieService.getMoviesByPage(pageNumber));
 		
 		return "movies.html";
 	}
 	@GetMapping("/movies")
 	public String getMovies(Model model) {
 		model.addAttribute("isAdmin",isAdmin());
-		Pageable pageable = PageRequest.of(0, 6);
-		int pages = (int) Math.ceil((double)this.movieRepository.countTotalMovies()/6);//Stabilisci quante pagine devo far vedere
 
 
 		model.addAttribute("page", 1);
-		model.addAttribute("pages", pages);
-		model.addAttribute("movies", this.movieRepository.findAllMovies(pageable));
+		model.addAttribute("pages", this.movieService.getNumberOfPages());
+		model.addAttribute("movies", this.movieService.getMoviesByPage(1));
 		
 		return "movies.html";
 	}
@@ -310,8 +233,8 @@ public class MovieController {
 	@PostMapping("/searchMovies")
 	public String searchMovies(Model model, @RequestParam String year) {
 		model.addAttribute("isAdmin",isAdmin());
-		Pageable pageable = PageRequest.of(0, 6);
-		List<Movie> foundMovies = this.movieRepository.findByTitleContainingIgnoreCase(year,pageable);
+		
+		List<Movie> foundMovies = this.movieService.findMovieByTitle(year);
 		int pages = (int) Math.ceil((double)foundMovies.size()/6);//Stabilisci quante pagine devo far vedere
 
 
@@ -326,22 +249,18 @@ public class MovieController {
 
 		List<Artist> actorsToAdd = this.actorsToAdd(id);
 		model.addAttribute("actorsToAdd", actorsToAdd);
-		model.addAttribute("movie", this.movieRepository.findById(id).get());
+		model.addAttribute("movie", this.movieService.findMovieById(id));
 
 		return "admin/actorsToAdd.html";
 	}
 
 	@GetMapping(value="/admin/addActorToMovie/{actorId}/{movieId}")
 	public String addActorToMovie(@PathVariable("actorId") Long actorId, @PathVariable("movieId") Long movieId, Model model) {
-		Movie movie = this.movieRepository.findById(movieId).get();
-		Artist actor = this.artistRepository.findById(actorId).get();
-		Set<Artist> actors = movie.getActors();
-		actors.add(actor);
-		this.movieRepository.save(movie);
+		this.movieService.addActorToMovie(actorId,movieId);
 		
 		List<Artist> actorsToAdd = actorsToAdd(movieId);
 		
-		model.addAttribute("movie", movie);
+		model.addAttribute("movie", this.movieService.findMovieById(movieId));
 		model.addAttribute("actorsToAdd", actorsToAdd);
 
 		return "admin/actorsToAdd.html";
@@ -349,15 +268,11 @@ public class MovieController {
 	
 	@GetMapping(value="/admin/removeActorFromMovie/{actorId}/{movieId}")
 	public String removeActorFromMovie(@PathVariable("actorId") Long actorId, @PathVariable("movieId") Long movieId, Model model) {
-		Movie movie = this.movieRepository.findById(movieId).get();
-		Artist actor = this.artistRepository.findById(actorId).get();
-		Set<Artist> actors = movie.getActors();
-		actors.remove(actor);
-		this.movieRepository.save(movie);
+		this.movieService.removeActorFromMovie(actorId,movieId);
 
 		List<Artist> actorsToAdd = actorsToAdd(movieId);
 		
-		model.addAttribute("movie", movie);
+		model.addAttribute("movie", this.movieService.findMovieById(movieId));
 		model.addAttribute("actorsToAdd", actorsToAdd);
 
 		return "admin/actorsToAdd.html";
@@ -368,7 +283,7 @@ public class MovieController {
 	private List<Artist> actorsToAdd(Long movieId) {
 		List<Artist> actorsToAdd = new ArrayList<>();
 
-		for (Artist a : artistRepository.findActorsNotInMovie(movieId)) {
+		for (Artist a : artistService.findActorsNotInMovie(movieId)) {
 			actorsToAdd.add(a);
 		}
 		return actorsToAdd;

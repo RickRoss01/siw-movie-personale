@@ -101,8 +101,11 @@ public String writeReview(@PathVariable("id") Long id, Model model) {
 	
 	private void updateMovieRaing(Movie movie) {
 		Float movieRating = reviewRepository.getAvgRating(movie);
-		
-		movie.setRating((float) ((Math.round(movieRating *10.0)/10.0)));
+		if(movieRating != null){
+			movie.setRating((float) ((Math.round(movieRating *10.0)/10.0)));
+		}else
+			movie.setRating(0.0f);
+			
 		this.movieRepository.save(movie);
 	}
 

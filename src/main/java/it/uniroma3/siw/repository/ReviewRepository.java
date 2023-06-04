@@ -26,4 +26,6 @@ public interface ReviewRepository extends CrudRepository<Review, Long> {
 
 	@Query("SELECT r FROM Review r WHERE r.movie = :movie ORDER BY r.createdOn DESC")
     public List<Review> findTop3ReviewsOrderByCreatedOnDesc(@Param("movie") Movie movie, Pageable pageable);
+
+    public Long deleteByMovieId(Long movieId);
 }
