@@ -292,13 +292,6 @@ public class MovieController {
 	public String getMovies(Model model) {
 		model.addAttribute("isAdmin",isAdmin());
 		Pageable pageable = PageRequest.of(0, 6);
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if(!(authentication instanceof AnonymousAuthenticationToken)) {
-			UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			Credentials credentials = credentialsService.getCredentials(userDetails.getUsername());
-			model.addAttribute("user", credentials.getUser());
-		}
-		
 		int pages = (int) Math.ceil((double)this.movieRepository.countTotalMovies()/6);//Stabilisci quante pagine devo far vedere
 
 

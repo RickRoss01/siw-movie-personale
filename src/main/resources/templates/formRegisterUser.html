@@ -1,69 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html data-bs-theme="dark">
 
 <head>
 	<title>
-		SiwMovie - Registrazione
+		SiwMovie - Homepage
 	</title>
-	<link rel="stylesheet" href="/css/stile.css" />
+	
+    
+</head>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Film</title>
+	 <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link href="/css/loginstyle.css" rel="stylesheet">
 </head>
 
 <body>
-	<header>
-		<div th:if="${#request.userPrincipal}">
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+ <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" >
+	
+	<div class="container-fluid" style="max-width: 1500px;">
+	  <a class="navbar-brand" href="/">SiwMovie</a>
+	  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+	  <div class="collapse navbar-collapse" id="navbarScroll">
+		<ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+		  <li class="nav-item">
+			<a class="nav-link active" aria-current="page" href="/">Home</a>
+		  </li>
+		  
+		  <li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+			  FIlm
+			</a>
+			<ul class="dropdown-menu">
+			  <li><a class="dropdown-item" href="/movies">Tutti i Film</a></li>
+			  <li><hr class="dropdown-divider"></li>
+			  <li><a class="dropdown-item" href="#">Azione</a></li>
+			  <li><a class="dropdown-item" href="#">Horror</a></li>
+			</ul>
+		  </li>
+		  
+		  <li class="nav-item" >
+			<a class="nav-link" href="/artists" >Artisti</a>
+		  </li>
+		  <li class="nav-item" th:if="${isAdmin}">
+			<a class="nav-link" href="/success">Pannello di controllo </a>
+			</li>	
+		</ul>
+		
+		<form class="d-flex flex-grow-1" th:action="@{/searchMovies}" method="post"  style="margin-right: 100px; ">
+		  <input class="form-control me-2"  th:value="${year}"  name="year" type="search" placeholder="Cerca un film!" aria-label="Search">
+		  <button class="btn btn-outline-success" type="submit">Cerca</button>
+		</form>
+		<div th:if="${#request.userPrincipal}" style="margin-left: 10%;">
+			<span>Ciao, </span>
 			<span th:if="${#request.userPrincipal.principal instanceof T(org.springframework.security.oauth2.core.user.DefaultOAuth2User)}" th:text="${#request.userPrincipal.principal.attributes.name}"> </span>
 			<span th:unless="${#request.userPrincipal.principal instanceof T(org.springframework.security.oauth2.core.user.DefaultOAuth2User)}" th:text="${#request.userPrincipal.principal.username}"> </span>
-			<a href="/logout">Logout</a>
+			<button class="btn btn-outline-success" type="submit"><a id="loginbutton" href="/logout">Logout</a></button>
 		</div>
 		<div th:unless="${#request.userPrincipal}">
-			<a href="/login">Login</a>
+			<button class="btn btn-outline-success" type="submit"><a id="loginbutton" href="/login">Login</a></button>
 		</div>
-	</header>
-
-	<div>
-		<a href="/"><img src="/images/logo-siw.png" width="50%" /></a>
+	  </div>
+	
 	</div>
-	<h1>Registrazione nuovo utente</h1>
-	<form th:action="@{/register}" method="POST">
-		<div>
-			<label>Username</label>
-			<span>
-				<input type="text" placeholder="username" required th:field="${credentials.username}" />
-			</span>
-			<span th:if="${#fields.hasErrors('credentials.username')}" th:errors="${credentials.username}"
-				th:style="'color:red'">
-			</span>
-		</div>
-		<div>
-			<label>Password</label>
+  </nav>
+
+  <div class="container my-5">
+    <div class="card">
+        <h2>Registrazione</h2>
+        <form th:action="@{/Register}" method="POST">
+            <div>
+				<label>Username</label>
+                <span>
+					<input type="text" placeholder="username" required th:field="${credentials.username}" />
+				</span>
+				<span th:if="${#fields.hasErrors('credentials.username')}" th:errors="${credentials.username}"
+					th:style="'color:red'">
+				</span>
+            </div>
+            <div>
+                <label>Password</label>
 			<span><input type="password" placeholder="password" required th:field="${credentials.password}" />
 			</span>
 			<span th:if="${#fields.hasErrors('credentials.password')}" th:errors="${credentials.password}"
 				th:style="'color:red'">
 			</span>
-		</div>
-		<div>
-			<label>Nome</label>
+            </div>
+            <div>
+				<label>Nome</label>
 			<span><input type="text" placeholder="name" required th:field="${user.name}" /></span>
 			<span th:if="${#fields.hasErrors('user.name')}" th:errors="${user.name}" th:style="'color:red'">
 			</span>
+            </div>
+			<div>
+				<label>Cognome</label>
+				<span><input type="text" placeholder="surname" required th:field="${user.surname}" /></span>
+				<span th:if="${#fields.hasErrors('user.surname')}" th:errors="${user.surname}" th:style="'color:red'">
+				</span>
+			</div>
+			<div>
+				<label>Email</label>
+				<span><input type="text" placeholder="email" required th:field="${user.email}" /></span>
+				<span th:if="${#fields.hasErrors('user.email')}" th:errors="${user.email}" th:style="'color:red'">
+				</span>
+			</div>
+            <div>
+                <button class="btn" type="submit">Registrati</button>
+            </div>
+            <div class="divider">Oppure</div>
+            
+        </form>
+		<div class="register-link">
+			<a th:href="@{/login}">Login</a>
 		</div>
 		<div>
-			<label>Cognome</label>
-			<span><input type="text" placeholder="surname" required th:field="${user.surname}" /></span>
-			<span th:if="${#fields.hasErrors('user.surname')}" th:errors="${user.surname}" th:style="'color:red'">
-			</span>
+			<a href="/oauth2/authorization/google">
+				<button class="btn">
+					<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo" class="google-logo">
+					Accedi con Google
+				</button>
+			</a>
 		</div>
-		<div>
-			<label>Email</label>
-			<span><input type="text" placeholder="email" required th:field="${user.email}" /></span>
-			<span th:if="${#fields.hasErrors('user.email')}" th:errors="${user.email}" th:style="'color:red'">
-			</span>
-		</div>
-		<div>
-			<button type="submit">Registra</button>
-		</div>
-	</form>
+    </div>
+</div>
+	  
 </body>
 
 </html>

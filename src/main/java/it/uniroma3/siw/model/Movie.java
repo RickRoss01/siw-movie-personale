@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -34,6 +35,7 @@ public class Movie {
     @Max(2023)
 	private Integer year;
 
+	@Column(precision=10, scale=2)
 	private Float rating;
     
 	private String urlImage;
