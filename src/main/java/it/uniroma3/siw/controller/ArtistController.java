@@ -1,15 +1,11 @@
 package it.uniroma3.siw.controller;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,27 +17,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import it.uniroma3.siw.controller.validator.ArtistValidator;
 import it.uniroma3.siw.model.Artist;
-import it.uniroma3.siw.model.Image;
-import it.uniroma3.siw.model.Movie;
-import it.uniroma3.siw.repository.ArtistRepository;
 import it.uniroma3.siw.service.ArtistService;
-import it.uniroma3.siw.service.StorageService;
 
 @Controller
 public class ArtistController {
 	
-
-	@Autowired 
-	private ArtistValidator artistValidator;
-
-
 	@Autowired
 	private ArtistService artistService;
 
-	@Autowired
-	private StorageService service;
 
 	@GetMapping(value="/admin/formNewArtist")
 	public String formNewArtist(Model model) {
@@ -57,7 +41,7 @@ public class ArtistController {
 	
 	@PostMapping("/admin/newArtist")
 	public String newArtist(@Valid @ModelAttribute("artist") Artist artist,BindingResult bindingResult,@RequestParam("artistimage")MultipartFile file,Model model) throws IOException, InterruptedException {
-		this.artistValidator.validate(artist, bindingResult);
+		
 		if(this.artistService.newArtist(artist,bindingResult,file)){
 			model.addAttribute("artist", artist);
 			TimeUnit.SECONDS.sleep(1);
@@ -159,7 +143,6 @@ public class ArtistController {
 	@GetMapping(value="/admin/formUpdateArtist/{id}")
 	public String formUpdateArtist(@PathVariable("id") Long id, Model model) {
 		model.addAttribute("isAdmin",isAdmin());
-		Pageable pageable = PageRequest.of(0, 3);
 		model.addAttribute("artist", artistService.findById(id));
 		model.addAttribute("topDirectorMovies", this.artistService.findTop3DirectorMoviesOrderByRatingDesc(id));
 		model.addAttribute("topActorMovies", this.artistService.findTop3ActorMoviesOrderByRatingDesc(id));

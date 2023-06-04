@@ -258,3 +258,14 @@ p.flex-item {
   .card{
     justify-content: center;
   }
+
+  .square-image {
+    width: 50px;
+    height: 50px;
+    overflow: hidden;
+}
+
+.square-image img {
+    width: 100%;
+    height: auto;
+}

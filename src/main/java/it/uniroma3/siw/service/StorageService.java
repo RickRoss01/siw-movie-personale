@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import it.uniroma3.siw.model.Image;
-import it.uniroma3.siw.model.Movie;
 import it.uniroma3.siw.repository.ImageRepository;
 
 @Service

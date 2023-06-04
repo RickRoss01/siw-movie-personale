@@ -1,8 +1,6 @@
 package it.uniroma3.siw.controller;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +9,6 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -70,17 +67,13 @@ public class AuthenticationController {
             
             Map<String, Object> attributes = oauth2User.getAttributes();
             
-	        
-    
-            // Ottenere il valore della stringa "name" dalla mappa di attributi
             String username = (String) attributes.get("email");
             String name = (String) attributes.get("given_name");
             String surname = (String) attributes.get("family_name");
-            // Controlla se l'utente è già registrato nel tuo database
+            // Controlla se l'utente è già registrato
             Credentials credentials = credentialsService.getCredentials(username);
             if (credentials == null) {
-                // Utente non registrato, esegui la registrazione
-                // Esempio di registrazione di un nuovo utente con i dati forniti da OAuth2
+                // Utente non registrato, esegui registrazione
                 credentials = new Credentials();
                 User user = new User();
                 user.setName(name);
@@ -88,10 +81,10 @@ public class AuthenticationController {
                 user.setEmail(username);
                 credentials.setUser(user);
                 credentials.setUsername(username);
-                credentials.setPassword(""); // Setta una password vuota o generata casualmente
+                credentials.setPassword(""); 
                 credentials.setRole(Credentials.DEFAULT_ROLE);
     
-                // Salva le credenziali nel tuo database
+                // Salva credenziali
                 userRepository.save(user);
                 credentialsService.saveCredentials(credentials);
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority(DEFAULT_ROLE);
@@ -113,18 +106,12 @@ public class AuthenticationController {
                 }
                 
                 Authentication newAuthentication = new UsernamePasswordAuthenticationToken(principal, credentials, updatedAuthorities);
-                Collection d = (Collection<Object>) newAuthentication.getAuthorities();
                 SecurityContextHolder.getContext().setAuthentication(newAuthentication);
                 if (credentials.getRole().equals(Credentials.ADMIN_ROLE)) 
                     return "admin/indexAdmin.html";
             }
         
             
-            // Puoi fare ulteriori operazioni con le autorizzazioni dell'utente OAuth2
-            Collection<? extends GrantedAuthority> authorities = oauth2User.getAuthorities();
-            // ...
-    
-            // Restituisci la pagina desiderata in base al ruolo dell'utente
             
         }else if (principal instanceof UserDetails) {
             UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();

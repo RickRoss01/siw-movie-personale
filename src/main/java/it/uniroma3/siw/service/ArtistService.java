@@ -6,8 +6,6 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 
-import javax.management.Query;
-import javax.persistence.EntityManager;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,6 +111,7 @@ public class ArtistService {
     }
 
     public boolean newArtist(@Valid Artist artist, BindingResult bindingResult, MultipartFile file) throws IOException {
+        this.artistValidator.validate(artist, bindingResult);
         if (!bindingResult.hasErrors()) {
 			if(!file.isEmpty()){
 				Image image = service.uploadImageToFileSystem(file);

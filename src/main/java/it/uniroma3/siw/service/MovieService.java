@@ -1,22 +1,16 @@
 package it.uniroma3.siw.service;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.management.Query;
-import javax.persistence.EntityManager;
 import javax.validation.Valid;
 
-import org.apache.catalina.authenticator.SpnegoAuthenticator.AuthenticateAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -78,7 +72,6 @@ public class MovieService {
 
     @Transactional
     public void setDirectorToMovie(Long directorId, Long movieId) {
-        Pageable pageable = PageRequest.of(0, 3);
 		Artist director = this.artistRepository.findById(directorId).get();
 		Movie movie = this.movieRepository.findById(movieId).get();
         movie.setDirector(director);
@@ -143,6 +136,7 @@ public class MovieService {
 		actors.add(actor);
     }
 
+    @Transactional
     public boolean newMovie(@Valid Movie movie, BindingResult bindingResult, MultipartFile file, MultipartFile[] files) throws IOException {
         this.movieValidator.validate(movie, bindingResult);
 		if (!bindingResult.hasErrors()) {
@@ -161,15 +155,14 @@ public class MovieService {
 				}
 			});
 			
-			this.movieRepository.save(movie); 
-			
-			Pageable pageable = PageRequest.of(0, 3);
 			
 			
 			return true;
 		}
         return false;
     }
+
+    @Transactional
     public void updateMovieRaing(Movie movie) {
 		Float movieRating = reviewRepository.getAvgRating(movie);
 		if(movieRating != null){
@@ -177,7 +170,6 @@ public class MovieService {
 		}else
 			movie.setRating(0.0f);
 			
-		this.movieRepository.save(movie);
 	}
 
 
