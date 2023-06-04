@@ -170,7 +170,15 @@ public class MovieService {
 		}
         return false;
     }
-
+    public void updateMovieRaing(Movie movie) {
+		Float movieRating = reviewRepository.getAvgRating(movie);
+		if(movieRating != null){
+			movie.setRating((float) ((Math.round(movieRating *10.0)/10.0)));
+		}else
+			movie.setRating(0.0f);
+			
+		this.movieRepository.save(movie);
+	}
 
 
 

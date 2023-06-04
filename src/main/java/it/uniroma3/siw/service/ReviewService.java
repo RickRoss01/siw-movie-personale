@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import javax.management.Query;
 import javax.persistence.EntityManager;
+import javax.validation.Valid;
 
 import org.apache.catalina.authenticator.SpnegoAuthenticator.AuthenticateAction;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 
+import it.uniroma3.siw.controller.validator.ReviewValidator;
 import it.uniroma3.siw.model.Artist;
 import it.uniroma3.siw.model.Movie;
 import it.uniroma3.siw.model.Review;
@@ -43,6 +46,12 @@ public class ReviewService {
     @Autowired
     protected CredentialsService credentialsService;
 
+    @Autowired
+    protected ReviewValidator reviewValidator;
+
+    @Autowired
+    protected MovieService movieService;
+
     public List<Review> findTop3ReviewsByMovieId(Long movieId){
         Pageable pageable = PageRequest.of(0, 3);
         Movie movie = this.movieRepository.findById(movieId).get();
@@ -65,6 +74,33 @@ public class ReviewService {
 
     public Review findByMovieIdAndUserId (Long movieId, Long userId){
         return this.reviewRepository.findByMovieIdAndUserId(movieId, userId);
+    }
+
+
+    public List<Review> findByMovieId(Long id) {
+        return this.reviewRepository.findByMovieId(id);
+    }
+
+
+    public boolean existsById(Long reviewId) {
+        return this.reviewRepository.existsById(reviewId);
+    }
+
+
+    public void deleteById(Long reviewId) {
+        this.reviewRepository.deleteById(reviewId);
+    }
+
+
+    public boolean newReview(@Valid Review newreview, BindingResult bindingResult) {
+        this.reviewValidator.validate(newreview, bindingResult);
+		if (!bindingResult.hasErrors()) {
+			this.reviewRepository.save(newreview); 
+			this.movieService.updateMovieRaing(newreview.getMovie());
+			return true;
+		} else {
+			return false;
+		}
     }
    
 }

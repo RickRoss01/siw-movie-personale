@@ -5,8 +5,6 @@ import java.util.Map;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -17,26 +15,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import it.uniroma3.siw.controller.validator.ReviewValidator;
 import it.uniroma3.siw.model.Credentials;
 import it.uniroma3.siw.model.Movie;
 import it.uniroma3.siw.model.Review;
 import it.uniroma3.siw.model.User;
-import it.uniroma3.siw.repository.MovieRepository;
-import it.uniroma3.siw.repository.ReviewRepository;
-import it.uniroma3.siw.repository.UserRepository;
 import it.uniroma3.siw.service.CredentialsService;
+import it.uniroma3.siw.service.MovieService;
+import it.uniroma3.siw.service.ReviewService;
 
 @Controller
 public class ReviewController {
 	@Autowired
-	private ReviewRepository reviewRepository;
+	private ReviewService reviewService;
 
 	@Autowired
-	private MovieRepository movieRepository;
-
-	@Autowired
-	private ReviewValidator reviewValidator;
+	private MovieService movieService;
 
 	@Autowired
 	private MovieController movieController;
@@ -50,8 +43,8 @@ public class ReviewController {
 	@GetMapping("/movie/{id}/reviews")
 	public String getMovieReviews(@PathVariable("id") Long id, Model model) {
 		model.addAttribute("isAdmin",isAdmin());
-		Movie movie= this.movieRepository.findById(id).get();
-		model.addAttribute("reviews", reviewRepository.findByMovieId(id));
+		Movie movie= this.movieService.findMovieById(id);
+		model.addAttribute("reviews", reviewService.findByMovieId(id));
 		model.addAttribute("movie", movie);
 
 		return "Reviews.html";
@@ -59,17 +52,17 @@ public class ReviewController {
 
 	@GetMapping("/admin/deleteReview/{reviewId}/{movieId}")
 	public String manageArtists(@PathVariable("reviewId") Long reviewId , @PathVariable("movieId") Long movieId ,Model model) {
-		if(reviewRepository.existsById(reviewId)){
-			this.reviewRepository.deleteById(reviewId);
+		if(reviewService.existsById(reviewId)){
+			this.reviewService.deleteById(reviewId);
 		}
 		model.addAttribute("operation", "Recensione Cancellata");
-		updateMovieRaing(this.movieRepository.findById(movieId).get());
+		this.movieService.updateMovieRaing(this.movieService.findMovieById(movieId));
 		return getMovieReviews(movieId, model);
 	}
 
 	@GetMapping("/authenticated/writeReview/{id}")
 public String writeReview(@PathVariable("id") Long id, Model model) {
-    Movie movie = this.movieRepository.findById(id).get();
+    Movie movie = this.movieService.findMovieById(id);
     Review newreview = new Review();
 	
 	
@@ -84,12 +77,9 @@ public String writeReview(@PathVariable("id") Long id, Model model) {
 	public String newReview(@Valid @ModelAttribute("newreview") Review newreview,  BindingResult bindingResult, Model model) {
 		model.addAttribute("isAdmin",isAdmin());
 		
-		this.reviewValidator.validate(newreview, bindingResult);
-		if (!bindingResult.hasErrors()) {
-			Movie movie =  newreview.getMovie();
+		if (this.reviewService.newReview(newreview,bindingResult)) {
+			Movie movie = newreview.getMovie();
 			model.addAttribute("movie",movie);
-			this.reviewRepository.save(newreview); 
-			updateMovieRaing(newreview.getMovie());
 			return this.movieController.getMovie(movie.getId(), model);
 		} else {
 			model.addAttribute("movie", newreview.getMovie());
@@ -99,15 +89,7 @@ public String writeReview(@PathVariable("id") Long id, Model model) {
 	}
 
 	
-	private void updateMovieRaing(Movie movie) {
-		Float movieRating = reviewRepository.getAvgRating(movie);
-		if(movieRating != null){
-			movie.setRating((float) ((Math.round(movieRating *10.0)/10.0)));
-		}else
-			movie.setRating(0.0f);
-			
-		this.movieRepository.save(movie);
-	}
+	
 
 	private User getCurrentUser() {
 		if(SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof DefaultOAuth2User){

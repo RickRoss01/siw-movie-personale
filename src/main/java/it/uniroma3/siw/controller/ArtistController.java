@@ -32,14 +32,10 @@ import it.uniroma3.siw.service.StorageService;
 @Controller
 public class ArtistController {
 	
-	@Autowired 
-	private ArtistRepository artistRepository;
 
 	@Autowired 
 	private ArtistValidator artistValidator;
 
-	@Autowired 
-	private MovieController movieController;
 
 	@Autowired
 	private ArtistService artistService;
@@ -62,15 +58,10 @@ public class ArtistController {
 	@PostMapping("/admin/newArtist")
 	public String newArtist(@Valid @ModelAttribute("artist") Artist artist,BindingResult bindingResult,@RequestParam("artistimage")MultipartFile file,Model model) throws IOException, InterruptedException {
 		this.artistValidator.validate(artist, bindingResult);
-		if (!bindingResult.hasErrors()) {
-			if(!file.isEmpty()){
-				Image image = service.uploadImageToFileSystem(file);
-				artist.setImage(image);
-			}
-			this.artistRepository.save(artist);
+		if(this.artistService.newArtist(artist,bindingResult,file)){
 			model.addAttribute("artist", artist);
-			 TimeUnit.SECONDS.sleep(1);
-			return getArtist(artist.getId(), model);
+			TimeUnit.SECONDS.sleep(1);
+			return formUpdateArtist(artist.getId(), model);
 		}else {
 			
 			return "admin/formNewArtist.html"; 
@@ -79,98 +70,72 @@ public class ArtistController {
 
 	@PostMapping("/updateArtistNameAndSurname")
 	public String updateArtistNameAndSurname(@RequestParam("newName") String newName, @RequestParam("newSurname") String newSurname,@RequestParam("artistId") Long artistId, Model model){
-		Optional<Artist> artist = this.artistRepository.findById(artistId);
-		if(artist == null){
-			model.addAttribute("operation", "Artista non trovato");
-			return manageArtists(model);
-		}
-		this.artistService.updateNameAndSurname(newName,newSurname,artist.get());
+		this.artistService.updateNameAndSurname(newName, newSurname, artistId);
 		model.addAttribute("operation", "Operazione effettuata");
 		return formUpdateArtist(artistId, model);
 	}
 
 	@PostMapping("/updateArtistDateOfBirth")
 	public String updateArtistDateOfBirth(@RequestParam("newDateOfBirth") String newDateOfBirth, @RequestParam("artistId") Long artistId, Model model){
-		Optional<Artist> artist = this.artistRepository.findById(artistId);
-		if(artist == null){
-			model.addAttribute("operation", "Artista non trovato");
-			return manageArtists(model);
-		}
-		model.addAttribute("operation", this.artistService.updateDateOfBirth(newDateOfBirth,artist.get()));
+		
+		model.addAttribute("operation", this.artistService.updateDateOfBirth(newDateOfBirth,artistId));
 		return formUpdateArtist(artistId, model);
 	}
 
 	@PostMapping("/updateArtistDateOfDeath")
 	public String updateArtistDateOfDeath(@RequestParam("newDateOfDeath") String newDateOfDeath, @RequestParam("artistId") Long artistId, Model model){
-		Optional<Artist> artist = this.artistRepository.findById(artistId);
-		if(artist == null){
-			model.addAttribute("operation", "Artista non trovato");
-			return manageArtists(model);
-		}
-		model.addAttribute("operation", this.artistService.updateDateOfDeath(newDateOfDeath,artist.get()));
+		model.addAttribute("operation", this.artistService.updateDateOfDeath(newDateOfDeath,artistId));
 		return formUpdateArtist(artistId, model);
 	}
 
 	@PostMapping("/updateArtistBio")
 	public String updateArtistBio(@RequestParam("newBio") String newBio, @RequestParam("artistId") Long artistId, Model model){
-		Optional<Artist> artist = this.artistRepository.findById(artistId);
-		if(artist == null){
-			model.addAttribute("operation", "Artista non trovato");
-			return manageArtists(model);
-		}
-		model.addAttribute("operation", this.artistService.updateBio(newBio,artist.get()));
+		model.addAttribute("operation", this.artistService.updateBio(newBio,artistId));
 		return formUpdateArtist(artistId, model);
 	}
 
 	@GetMapping("/artist/{id}")
 	public String getArtist(@PathVariable("id") Long id, Model model) {
 		model.addAttribute("isAdmin",isAdmin());
-		Pageable pageable = PageRequest.of(0, 3);
-		model.addAttribute("artist", this.artistRepository.findById(id).get());
-		model.addAttribute("topDirectorMovies", this.artistRepository.findTopDirectorMoviesOrderByRatingDesc(pageable,id));
-		model.addAttribute("topActorMovies", this.artistRepository.findTopActorMoviesOrderByRatingDesc(pageable,id));
+		
+		model.addAttribute("artist", this.artistService.findById(id));
+		model.addAttribute("topDirectorMovies", this.artistService.findTop3DirectorMoviesOrderByRatingDesc(id));
+		model.addAttribute("topActorMovies", this.artistService.findTop3ActorMoviesOrderByRatingDesc(id));
 		return "artist.html";
 	}
 
 	@GetMapping("/artists")
 	public String getArtists(Model model) {
-		Pageable pageable = PageRequest.of(0, 6);
-		int pages = (int) Math.ceil((double)this.artistRepository.countTotalArtists()/6);//Stabilisci quante pagine devo far vedere
-
-
+		
 		model.addAttribute("page", 1);
-		model.addAttribute("pages", pages);
+		model.addAttribute("pages", this.artistService.getNumberOfPages());
 
 		model.addAttribute("isAdmin",isAdmin());
-		model.addAttribute("artists", this.artistRepository.findAllArtists(pageable));
+		model.addAttribute("artists", this.artistService.getArtistsByPage(1));
 		return "artists.html";
 	}
 
 	@GetMapping("/artists/{pageNumber}")
 	public String getArtistsByPage(@PathVariable("pageNumber") Integer pageNumber, Model model) {
-		Pageable pageable = PageRequest.of((pageNumber-1), 6);
 		
-		int pages = (int) Math.ceil((double)this.artistRepository.countTotalArtists()/6);//Stabilisci quante pagine devo far vedere
 		
-		model.addAttribute("pages", pages);
+		model.addAttribute("pages", this.artistService.getNumberOfPages());
     	model.addAttribute("page", pageNumber);
 		model.addAttribute("isAdmin",isAdmin());
-		model.addAttribute("artists", this.artistRepository.findAllArtists(pageable));
+		model.addAttribute("artists", this.artistService.getArtistsByPage(pageNumber));
 		return "artists.html";
 	}
 	
 
 	@GetMapping("/admin/manageArtists")
 	public String manageArtists(Model model) {
-		Pageable pageable = PageRequest.of(0, 6);
-		int pages = (int) Math.ceil((double)this.artistRepository.countTotalArtists()/6);//Stabilisci quante pagine devo far vedere
 
 
 		model.addAttribute("page", 1);
-		model.addAttribute("pages", pages);
+		model.addAttribute("pages", this.artistService.getNumberOfPages());
 
 		model.addAttribute("isAdmin",isAdmin());
-		model.addAttribute("artists", this.artistRepository.findAllArtists(pageable));
+		model.addAttribute("artists", this.artistService.getArtistsByPage(1));
 		return "admin/manageArtists.html";
 	}
 
@@ -183,14 +148,11 @@ public class ArtistController {
 
 	@GetMapping("/admin/manageArtists/{pageNumber}")
 	public String getManageArtistsByPage(@PathVariable("pageNumber") Integer pageNumber, Model model) {
-		Pageable pageable = PageRequest.of((pageNumber-1), 6);
 		
-		int pages = (int) Math.ceil((double)this.artistRepository.countTotalArtists()/6);//Stabilisci quante pagine devo far vedere
-		
-		model.addAttribute("pages", pages);
+		model.addAttribute("pages", this.artistService.getNumberOfPages());
     	model.addAttribute("page", pageNumber);
 		model.addAttribute("isAdmin",isAdmin());
-		model.addAttribute("artists", this.artistRepository.findAllArtists(pageable));
+		model.addAttribute("artists", this.artistService.getArtistsByPage(pageNumber));
 		return "admin/manageArtists.html";
 	}
 
@@ -198,9 +160,9 @@ public class ArtistController {
 	public String formUpdateArtist(@PathVariable("id") Long id, Model model) {
 		model.addAttribute("isAdmin",isAdmin());
 		Pageable pageable = PageRequest.of(0, 3);
-		model.addAttribute("artist", artistRepository.findById(id).get());
-		model.addAttribute("topDirectorMovies", this.artistRepository.findTopDirectorMoviesOrderByRatingDesc(pageable,id));
-		model.addAttribute("topActorMovies", this.artistRepository.findTopActorMoviesOrderByRatingDesc(pageable,id));
+		model.addAttribute("artist", artistService.findById(id));
+		model.addAttribute("topDirectorMovies", this.artistService.findTop3DirectorMoviesOrderByRatingDesc(id));
+		model.addAttribute("topActorMovies", this.artistService.findTop3ActorMoviesOrderByRatingDesc(id));
 
 		return "admin/formUpdateArtist.html";
 	}
