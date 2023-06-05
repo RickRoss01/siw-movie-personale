@@ -64,9 +64,13 @@
 	</div>
   </nav>
 
+  <div class="position-absolute top-0 start-50 translate-middle" style="margin-top: 10%;">
+	<h2 class="text-success" th:if="${operation}" th:text="${operation}" ></h2>
+</div>
   <div class="container my-5">
     <div class="card">
         <h2>Login</h2>
+		
         <form th:action="@{/login}" method="POST">
             <div>
                 <label for="username">Username:</label>

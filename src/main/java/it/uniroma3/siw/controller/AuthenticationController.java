@@ -138,8 +138,9 @@ public class AuthenticationController {
             credentials.setUser(user);
             credentialsService.saveCredentials(credentials);
             model.addAttribute("user", user);
-            return "registrationSuccessful";
+            model.addAttribute("operation", "Registrazione Completata");
+            return "formLogin";
         }
-        return "registerUser";
+        return "formRegisterUser";
     }
 }
