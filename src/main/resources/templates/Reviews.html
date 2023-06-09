@@ -73,7 +73,7 @@
 	  
 		<a class="btn btn-primary" th:if="${isAdmin}" th:href="@{|/admin/formUpdateMovie/${movie.id}|}">Torna Al Film</a>
 		<a class="btn btn-primary" th:unless="${isAdmin}" th:href="@{|/movie/${movie.id}|}">Torna Al film</a>
-		<div class="container my-5" th:unledd="${!reviews.isEmpty()}"  >
+		<div class="container my-5" th:unless="${!reviews.isEmpty()}"  >
 			<h2 class="text-center" >Nessuna Recensione</h2>
 		</div>
 	  <div class="container my-5" th:if="${!reviews.isEmpty()}"  >

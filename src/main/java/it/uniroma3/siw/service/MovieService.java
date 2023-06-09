@@ -96,7 +96,7 @@ public class MovieService {
         if (movie == null) {
             return "Errore, film non trovato";
         }
-	    if(!newTitle.isBlank()){
+	    if(newTitle.length() != 0){
 		    movie.get().setTitle(newTitle);
 	    }
         return "Titolo Aggiornato";
@@ -154,9 +154,7 @@ public class MovieService {
 					e.printStackTrace();
 				}
 			});
-			
-			
-			
+			movieRepository.save(movie);
 			return true;
 		}
         return false;

@@ -62,6 +62,7 @@
   </nav>
 
   <div class="container my-5 py-5" >
+	<a class="btn btn-primary" th:unless="${isAdmin}" th:href="@{|/movie/${movie.id}|}">Torna Al film</a>
   	<div class="d-flex gap-3">
 		
 		<table class="table caption-top table-responsive">

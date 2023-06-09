@@ -47,9 +47,9 @@ public class ArtistService {
     @Transactional
     public void updateNameAndSurname(String newName, String newSurname, Long artistId) {
         Artist artist = this.artistRepository.findById(artistId).get();
-        if(!newName.isBlank())
+        if(newName.length() !=0)
             artist.setName(newName);
-        if(!newSurname.isBlank()) 
+        if(newSurname.length() != 0) 
             artist.setSurname(newSurname);
     }
 
@@ -110,6 +110,7 @@ public class ArtistService {
         return (List<Artist>) this.artistRepository.findActorsNotInMovie(movieId);
     }
 
+    @Transactional
     public boolean newArtist(@Valid Artist artist, BindingResult bindingResult, MultipartFile file) throws IOException {
         this.artistValidator.validate(artist, bindingResult);
         if (!bindingResult.hasErrors()) {

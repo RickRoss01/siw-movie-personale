@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,24 +20,25 @@ public class StorageService {
     @Autowired
     private ImageRepository fileDataRepository;
 
-    private final String FOLDER_PATH="C:/Users/ricca/Desktop/UNIVERSITA/SIW/siw-movie-03/src/main/resources/static/images/";
-    
-
+    @Value("${file.upload.path}")
+    private String folderPath;
 
     public Image uploadImageToFileSystem(MultipartFile file) throws IOException {
-        String filePath=FOLDER_PATH+file.getOriginalFilename();
-        String imagePath = "images/"+file.getOriginalFilename();
-		
-        Image fileData=fileDataRepository.save(Image.builder()
-                .name(file.getOriginalFilename())
+        String fileName = file.getOriginalFilename().replace("(", "").replace(")", "").replace(" ", "_");
+        String filePath = folderPath + fileName;
+        String imagePath = "images/" + fileName;
+        
+        Image fileData = fileDataRepository.save(Image.builder()
+                .name(fileName)
                 .type(file.getContentType())
                 .imagePath(imagePath).build());
-            
-
+                
         file.transferTo(new File(filePath));
+        
         if (fileData != null) {
             return fileData;
         }
+        
         return null;
     }
 

@@ -152,11 +152,11 @@ public class MovieController {
 
 	@PostMapping("/admin/newMovie")
 	public String newMovie(@Valid @ModelAttribute("movie") Movie movie,BindingResult bindingResult,@RequestParam("image")MultipartFile file,@RequestParam("movieimages")MultipartFile[] files,Model model) throws IOException, InterruptedException {
-		;
 		if(this.movieService.newMovie(movie, bindingResult, file,files)){
 			model.addAttribute("movie", movie);
 			model.addAttribute("images", movie.getImages());
 			model.addAttribute("isAdmin",isAdmin());
+			Long i = movie.getId();
 			model.addAttribute("reviews", this.reviewService.findTop3ReviewsByMovieId(movie.getId()));
 			TimeUnit.SECONDS.sleep(1);
 			return "admin/formUpdateMovie.html";
@@ -271,6 +271,7 @@ public class MovieController {
 		this.movieService.removeActorFromMovie(actorId,movieId);
 
 		List<Artist> actorsToAdd = actorsToAdd(movieId);
+		
 		
 		model.addAttribute("movie", this.movieService.findMovieById(movieId));
 		model.addAttribute("actorsToAdd", actorsToAdd);
