@@ -46,10 +46,10 @@ public class Artist {
 	@Column(length = 5000)
 	private String biography;
 	
-	@ManyToMany(mappedBy="actors" , cascade = CascadeType.REMOVE)
+	@ManyToMany(mappedBy="actors" , cascade = CascadeType.DETACH)
 	private Set<Movie> starredMovies;
 	
-	@OneToMany(mappedBy="director" , cascade = CascadeType.REMOVE)
+	@OneToMany(mappedBy="director" , cascade = CascadeType.DETACH)
 	private List<Movie> directedMovies;
 	
 	public Artist(){

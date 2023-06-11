@@ -37,6 +37,6 @@ public interface ArtistRepository extends CrudRepository<Artist, Long> {
 	public List<Artist> findAllArtists(Pageable pageable);
 
 	@Modifying
-	@Query(value = "delete from movie_actors where actors_id = :artistId", nativeQuery=true)
+	@Query(value = "update movie set director_id = null where director_id = :artistId ; delete from movie_actors where actors_id = :artistId", nativeQuery=true)
 	public void deleteStarredAndDirectedMovies(@Param("artistId") Long id);
 }
