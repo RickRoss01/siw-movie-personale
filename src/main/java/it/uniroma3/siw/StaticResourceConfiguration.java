@@ -6,11 +6,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class StaticResourceConfiguration implements WebMvcConfigurer {
-    //Da cambiare in base a cartella
+    /*Da cambiare in base a cartella, utilizzato per deploy AWS
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("file:C:/Users/ricca/Desktop/UNIVERSITA/SIW/immagini/");
-    }
+    }*/
 }
 
