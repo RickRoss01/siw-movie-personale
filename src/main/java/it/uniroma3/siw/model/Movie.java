@@ -55,7 +55,7 @@ public class Movie {
 	@OneToMany(mappedBy = "movie")
 	private Set<Review> reviews;
 	
-	@OneToMany(mappedBy = "movie" ,fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "movie" ,fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
 	private Set<Image> images;
 
 	

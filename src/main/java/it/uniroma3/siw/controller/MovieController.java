@@ -156,7 +156,6 @@ public class MovieController {
 			model.addAttribute("movie", movie);
 			model.addAttribute("images", movie.getImages());
 			model.addAttribute("isAdmin",isAdmin());
-			Long i = movie.getId();
 			model.addAttribute("reviews", this.reviewService.findTop3ReviewsByMovieId(movie.getId()));
 			TimeUnit.SECONDS.sleep(1);
 			return "admin/formUpdateMovie.html";

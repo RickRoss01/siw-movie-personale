@@ -46,7 +46,7 @@
 					</li>
 					<li class="nav-item" th:if="${isAdmin}">
 						<a class="nav-link" href="/success">Pannello di controllo </a>
-						</li>
+					</li>
 				</ul>
 
 				<form class="d-flex flex-grow-1" th:action="@{/searchMovies}" method="post"
@@ -57,8 +57,12 @@
 				</form>
 				<div th:if="${#request.userPrincipal}" style="margin-left: 10%;">
 					<span>Ciao, </span>
-					<span th:if="${#request.userPrincipal.principal instanceof T(org.springframework.security.oauth2.core.user.DefaultOAuth2User)}" th:text="${#request.userPrincipal.principal.attributes.name}"> </span>
-					<span th:unless="${#request.userPrincipal.principal instanceof T(org.springframework.security.oauth2.core.user.DefaultOAuth2User)}" th:text="${#request.userPrincipal.principal.username}"> </span>
+					<span
+						th:if="${#request.userPrincipal.principal instanceof T(org.springframework.security.oauth2.core.user.DefaultOAuth2User)}"
+						th:text="${#request.userPrincipal.principal.attributes.name}"> </span>
+					<span
+						th:unless="${#request.userPrincipal.principal instanceof T(org.springframework.security.oauth2.core.user.DefaultOAuth2User)}"
+						th:text="${#request.userPrincipal.principal.username}"> </span>
 					<button class="btn btn-outline-success" type="submit"><a id="loginbutton"
 							href="/logout">Logout</a></button>
 				</div>
@@ -71,8 +75,6 @@
 		</div>
 	</nav>
 
-
-
 	<div th:if="${movie}" id="movie-container" style="padding-top: 2em;">
 		<div id="blurred" th:style="'background-image: url(/'+${movie.primaryImage.imagePath}+');'"></div>
 		<div id="black-blurred"></div>
@@ -82,48 +84,49 @@
 					<h1 th:text="${movie.title}">Up!</h1>
 					<h5>Nuova Recensione</h5>
 				</div>
-
-
 			</div>
-
 			<div class="d-flex p-2 justify-content-between align-items-center">
-
-
-
-
 			</div>
 			<div class="container review">
 				<form th:action="@{/newReview}" method="POST" th:object="${newreview}">
 					<div th:if="${#fields.hasGlobalErrors()}">
-						
-							<div class="alert alert-danger" role="alert" th:each="err : ${#fields.globalErrors()}" th:text="${err}">
-							A simple danger alert with <a href="#" class="alert-link">an example link</a>. Give it a click if you like.
-						  </div>
+
+						<div class="alert alert-danger" role="alert" th:each="err : ${#fields.globalErrors()}"
+							th:text="${err}">
+							A simple danger alert with <a href="#" class="alert-link">an example link</a>. Give it a
+							click if you like.
+						</div>
 					</div>
 					<div class="mb-3">
 						<label for="title" class="form-label">Titolo recensione</label>
-						<input th:if="${!#fields.hasErrors('title')}" type="text" class="form-control" id="title" th:field="*{title}" placeholder="">
-						<input th:if="${#fields.hasErrors('title')}" type="text" class="form-control is-invalid" id="title" th:field="*{title}" placeholder="">
+						<input th:if="${!#fields.hasErrors('title')}" type="text" class="form-control" id="title"
+							th:field="*{title}" placeholder="">
+						<input th:if="${#fields.hasErrors('title')}" type="text" class="form-control is-invalid"
+							id="title" th:field="*{title}" placeholder="">
 						<div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
 						<input type="hidden" name="movie" th:value="${movie.id}" id="movie">
 						<input type="hidden" name="user" th:value="${user.id}" id="user">
 					</div>
 					<div class="mb-3">
 						<label for="exampleFormControlTextarea1" class="form-label">Corpo Recensione</label>
-						<textarea th:if="${!#fields.hasErrors('reviewDescription')}" class="form-control" rows="3" th:field="*{reviewDescription}"></textarea>
-						<textarea th:if="${#fields.hasErrors('reviewDescription')}" class="form-control is-invalid" rows="3" th:field="*{reviewDescription}"></textarea>
-						<div class="invalid-feedback" th:if="${#fields.hasErrors('reviewDescription')}" th:errors="*{reviewDescription}"></div>
+						<textarea th:if="${!#fields.hasErrors('reviewDescription')}" class="form-control" rows="3"
+							th:field="*{reviewDescription}"></textarea>
+						<textarea th:if="${#fields.hasErrors('reviewDescription')}" class="form-control is-invalid"
+							rows="3" th:field="*{reviewDescription}"></textarea>
+						<div class="invalid-feedback" th:if="${#fields.hasErrors('reviewDescription')}"
+							th:errors="*{reviewDescription}"></div>
 						<label class="rating-label">
 							<strong>Valutazione</strong>
-							<input required class="rating" max="5" min="1" th:field="*{rating}" oninput="this.style.setProperty('--value', this.value)" step="1" type="range" value="1">
+							<input required class="rating" max="5" min="1" th:field="*{rating}"
+								oninput="this.style.setProperty('--value', this.value)" step="1" type="range" value="1">
 						</label>
 						<button class="btn btn-primary" type="submit">Invia Recensione</button>
 					</div>
 				</form>
 			</div>
-			
-			
-			
+
+
+
 
 </body>
 

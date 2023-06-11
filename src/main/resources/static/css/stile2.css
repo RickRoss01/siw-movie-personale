@@ -190,6 +190,7 @@ p.flex-item {
     position: relative;
     touch-action: manipulation;
     -webkit-appearance: none;
+    appearance: none;
   }
   [dir="rtl"] .rating {
     --dir: left;

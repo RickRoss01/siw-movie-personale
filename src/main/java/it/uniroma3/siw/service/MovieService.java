@@ -23,6 +23,7 @@ import it.uniroma3.siw.model.Artist;
 import it.uniroma3.siw.model.Image;
 import it.uniroma3.siw.model.Movie;
 import it.uniroma3.siw.repository.ArtistRepository;
+import it.uniroma3.siw.repository.ImageRepository;
 import it.uniroma3.siw.repository.MovieRepository;
 import it.uniroma3.siw.repository.ReviewRepository;
 
@@ -37,6 +38,9 @@ public class MovieService {
 
     @Autowired
     protected MovieRepository movieRepository;
+
+    @Autowired
+    private ImageRepository fileDataRepository;
 
     @Autowired 
 	private MovieValidator movieValidator;
@@ -148,7 +152,10 @@ public class MovieService {
 			
 			Arrays.stream(files).forEach(multipartFile -> {
 				try {
-					movie.addImage(service.uploadImageToFileSystem(multipartFile));
+                    Image image = service.uploadImageToFileSystem(multipartFile);
+                    image.setMovie(movie);
+					movie.addImage(image);
+                    fileDataRepository.save(image);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

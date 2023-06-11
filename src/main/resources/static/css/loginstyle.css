@@ -37,6 +37,7 @@ body {
 }
 
 .card input[type="text"],
+.card input[type="email"],
 .card input[type="password"] {
     width: 100%;
     padding: 10px;

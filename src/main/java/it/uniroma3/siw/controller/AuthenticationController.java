@@ -70,10 +70,8 @@ public class AuthenticationController {
             String username = (String) attributes.get("email");
             String name = (String) attributes.get("given_name");
             String surname = (String) attributes.get("family_name");
-            // Controlla se l'utente è già registrato
             Credentials credentials = credentialsService.getCredentials(username);
-            if (credentials == null) {
-                // Utente non registrato, esegui registrazione
+            if (credentials == null) {//se l'utente non è registrato esegui la registrazione
                 credentials = new Credentials();
                 User user = new User();
                 user.setName(name);
@@ -83,8 +81,7 @@ public class AuthenticationController {
                 credentials.setUsername(username);
                 credentials.setPassword(""); 
                 credentials.setRole(Credentials.DEFAULT_ROLE);
-    
-                // Salva credenziali
+
                 userRepository.save(user);
                 credentialsService.saveCredentials(credentials);
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority(DEFAULT_ROLE);
@@ -95,7 +92,7 @@ public class AuthenticationController {
                 
                 SecurityContextHolder.getContext().setAuthentication(newAuthentication);
                 SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-            }else{
+            }else{//altrimenti controlla le autorita
                 List<SimpleGrantedAuthority> updatedAuthorities = new ArrayList<SimpleGrantedAuthority>();
                 if(credentialsService.getCredentials(username).getRole().equals(DEFAULT_ROLE)){
                     SimpleGrantedAuthority authority = new SimpleGrantedAuthority(DEFAULT_ROLE);
