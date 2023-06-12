@@ -147,7 +147,12 @@ public class MovieController {
     
     return formUpdateMovie(movieId, model);
 }
-
+@PostMapping("/updateMovieImage")
+	public String updateMovieImage(@RequestParam("newImage") MultipartFile file, @RequestParam("movieId") Long movieId, Model model) throws IOException, InterruptedException{
+		model.addAttribute("operation", this.movieService.updateMovieImage(file,movieId));
+		TimeUnit.SECONDS.sleep(1);
+		return formUpdateMovie(movieId, model);
+	}
 
 
 	@PostMapping("/admin/newMovie")

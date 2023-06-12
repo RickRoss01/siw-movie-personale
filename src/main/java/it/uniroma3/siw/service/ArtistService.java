@@ -124,6 +124,19 @@ public class ArtistService {
         return false;
     }
 
+    @Transactional
+    public String updateImage(MultipartFile file, Long artistId)throws IOException {
+        Artist artist = artistRepository.findById(artistId).get();
+		if(!file.isEmpty()){
+			Image image = service.uploadImageToFileSystem(file);
+			artist.setImage(image);
+            this.artistRepository.save(artist);
+			return "Operazione completata";
+		}
+			return "Nessun Operazione effettuata";
+	}
+    
+
     public Artist findById(Long id) {
         Optional<Artist> artist = this.artistRepository.findById(id);
         if(artist != null)

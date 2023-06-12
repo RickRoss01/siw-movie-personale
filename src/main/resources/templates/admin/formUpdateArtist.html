@@ -59,6 +59,7 @@
 	  </div>
 	
 	</div>
+	
   </nav>
  
   <div th:if="${artist}"  id="movie-container" style="padding-top: 2em;">
@@ -85,7 +86,9 @@
 				<h5>Modifica</h5>
 			</a>
 		</div>
-		
+		<a data-bs-toggle="modal" data-bs-target="#imageModal" class="clickable-link">
+			<h5>Modifica immagine</h5>
+		</a>
 	  <div class="d-flex p-2">
 		<img th:if="${artist.image}" class="img-fluid flex-item" id="movie-image" th:src="${'/'+artist.image.imagePath} "style="margin-left:0px; margin-right: 0px;">
 	  <div style="padding-left: 2%;">
@@ -102,6 +105,7 @@
 	
 	  <div class="container">
 			<div class="container">
+				
 				<h1 th:if="${!topDirectorMovies.isEmpty()}">Principali Opere da Regista</h1>
 				<h1 th:unless="${!topDirectorMovies.isEmpty()}">Nessun Opera da Regista</h1>
 			</div>
@@ -232,6 +236,32 @@
 			<div class="mb-3">
 			  <label for="recipient-name" class="col-form-label">Nuova Data di Morte</label>
 			  <input type="date" class="form-control" id="recipient-name" name="newDateOfDeath">
+			</div>
+			<div class="mb-3">
+				<input type="text" class="form-control visually-hidden" id="recipient-name" th:value="${artist.id}" name="artistId">
+			  </div>
+			<button type="submit" class="btn btn-primary">Aggiorna</button>
+		  </form>
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+		  
+		</div>
+	  </div>
+	</div>
+  </div>
+  <div class="modal fade" id="imageModal" tabindex="-1"  aria-hidden="true">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h1 class="modal-title fs-5" id="exampleModalLabel">Modifica Immagine</h1>
+		  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
+		<div class="modal-body">
+		  <form th:action="@{/updateArtistImage}" method="POST" enctype="multipart/form-data">
+			<div class="mb-3">
+			  <label for="recipient-name" class="col-form-label">Nuova Immagine</label>
+			  <input class="form-control" type="file" id="image" name="newImage" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
 			</div>
 			<div class="mb-3">
 				<input type="text" class="form-control visually-hidden" id="recipient-name" th:value="${artist.id}" name="artistId">

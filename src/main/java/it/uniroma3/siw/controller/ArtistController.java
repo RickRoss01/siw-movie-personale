@@ -78,6 +78,13 @@ public class ArtistController {
 		return formUpdateArtist(artistId, model);
 	}
 
+	@PostMapping("/updateArtistImage")
+	public String updateArtistImage(@RequestParam("newImage") MultipartFile file, @RequestParam("artistId") Long artistId, Model model) throws IOException, InterruptedException{
+		model.addAttribute("operation", this.artistService.updateImage(file,artistId));
+		TimeUnit.SECONDS.sleep(1);
+		return formUpdateArtist(artistId, model);
+	}
+
 	@GetMapping("/artist/{id}")
 	public String getArtist(@PathVariable("id") Long id, Model model) {
 		model.addAttribute("isAdmin",isAdmin());

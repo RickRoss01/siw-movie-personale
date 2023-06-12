@@ -119,6 +119,21 @@ public class MovieService {
     return "Anno Aggiornato";
     }
 
+    @Transactional
+    public String updateMovieImage(MultipartFile file, Long movieId)throws IOException {
+        Movie movie = movieRepository.findById(movieId).get();
+		if(!file.isEmpty()){
+			Image image = service.uploadImageToFileSystem(file);
+			movie.setPrimaryImage(image);
+            movieRepository.save(movie);
+            return "Operazione effettuata";
+		}
+			
+			return "Nessun Operazione effettuata";
+			
+	}
+        
+
     public List<Movie> findMovieByTitle(String year) {
         
         return this.movieRepository.findByTitleContainingIgnoreCase(year);

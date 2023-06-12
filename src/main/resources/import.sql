@@ -1,6 +1,6 @@
 SET NAMES 'utf8';
 SET CHARACTER SET utf8;
-insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images/No_Image_Available.jpg');
+insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images/HP1.png');
 insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images/fullmetaljacket.jpg');
 insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images/Non_e_un_paese_per_vecchi.jpg');
 insert into image (id, image_path) values(nextval('hibernate_sequence'), 'images/The_founder.jpg');
